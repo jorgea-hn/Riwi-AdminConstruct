@@ -1,0 +1,13 @@
+﻿services:
+  adminconstruct.ryzor:
+    image: adminconstruct.ryzor
+    build:
+      context: .
+      dockerfile: AdminConstruct.Ryzor/Dockerfile
+
+  adminconstruct.api:
+    image: adminconstruct.api
+    build:
+      context: .
+      dockerfile: AdminConstruct.API/Dockerfile
+
