@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminConstruct.Blazor", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminConstruct.Test", "AdminConstruct.Test\AdminConstruct.Test.csproj", "{C96487B0-6868-4A4F-8AC1-601C050FD7D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminContruct.Blazor", "AdminContruct.Blazor\AdminContruct.Blazor.csproj", "{51346C94-19C0-4C67-9CAE-61C04E0EC9DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,5 +37,9 @@ Global
 		{C96487B0-6868-4A4F-8AC1-601C050FD7D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C96487B0-6868-4A4F-8AC1-601C050FD7D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C96487B0-6868-4A4F-8AC1-601C050FD7D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51346C94-19C0-4C67-9CAE-61C04E0EC9DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51346C94-19C0-4C67-9CAE-61C04E0EC9DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51346C94-19C0-4C67-9CAE-61C04E0EC9DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51346C94-19C0-4C67-9CAE-61C04E0EC9DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
