@@ -1,9 +1,10 @@
 using AdminConstruct.Ryzor.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdminConstruct.Ryzor.Data;
 
-public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options)
 {
     public DbSet<Product> Products { get; set; }
     public DbSet<Customer> Customers { get; set; }
