@@ -1,0 +1,47 @@
+@model IEnumerable<AdminConstruct.Ryzor.Models.Product>
+@{
+    ViewData["Title"] = "Productos";
+}
+
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-semibold">Productos</h1>
+    <a class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" asp-action="Create">Nuevo</a>
+</div>
+
+<form method="get" class="bg-white rounded-lg shadow p-4 mb-4 grid grid-cols-1 md:grid-cols-4 gap-3">
+    <input name="q" value="@ViewBag.Q" class="border rounded px-3 py-2" placeholder="Buscar por nombre" />
+    <input name="minPrice" value="@ViewBag.MinPrice" class="border rounded px-3 py-2" placeholder="Precio mín" />
+    <input name="maxPrice" value="@ViewBag.MaxPrice" class="border rounded px-3 py-2" placeholder="Precio máx" />
+    <button class="px-4 py-2 bg-gray-800 text-white rounded">Filtrar</button>
+    
+</form>
+
+<div class="bg-white rounded-lg shadow overflow-x-auto">
+    <table class="min-w-full">
+        <thead class="bg-gray-100 text-left">
+        <tr>
+            <th class="px-4 py-2">Nombre</th>
+            <th class="px-4 py-2">Precio</th>
+            <th class="px-4 py-2">Stock</th>
+            <th class="px-4 py-2"></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var p in Model)
+        {
+            <tr class="border-t">
+                <td class="px-4 py-2">@p.Name</td>
+                <td class="px-4 py-2">@p.Price.ToString("C")</td>
+                <td class="px-4 py-2">@p.StockQuantity</td>
+                <td class="px-4 py-2 text-right space-x-2">
+                    <a class="text-blue-700 underline" asp-action="Details" asp-route-id="@p.Id">Ver</a>
+                    <a class="text-yellow-700 underline" asp-action="Edit" asp-route-id="@p.Id">Editar</a>
+                    <a class="text-red-700 underline" asp-action="Delete" asp-route-id="@p.Id">Eliminar</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+

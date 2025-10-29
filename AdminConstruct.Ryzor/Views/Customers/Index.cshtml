@@ -1,0 +1,47 @@
+@model IEnumerable<AdminConstruct.Ryzor.Models.Customer>
+@{
+    ViewData["Title"] = "Clientes";
+}
+
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-semibold">Clientes</h1>
+    <a class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" asp-action="Create">Nuevo</a>
+</div>
+
+<form method="get" class="bg-white rounded-lg shadow p-4 mb-4 grid grid-cols-1 md:grid-cols-4 gap-3">
+    <input name="q" value="@ViewBag.Q" class="border rounded px-3 py-2" placeholder="Buscar nombre o documento" />
+    <button class="px-4 py-2 bg-gray-800 text-white rounded">Buscar</button>
+    
+</form>
+
+<div class="bg-white rounded-lg shadow overflow-x-auto">
+    <table class="min-w-full">
+        <thead class="bg-gray-100 text-left">
+        <tr>
+            <th class="px-4 py-2">Nombre</th>
+            <th class="px-4 py-2">Documento</th>
+            <th class="px-4 py-2">Email</th>
+            <th class="px-4 py-2">Teléfono</th>
+            <th class="px-4 py-2"></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var c in Model)
+        {
+            <tr class="border-t">
+                <td class="px-4 py-2">@c.Name</td>
+                <td class="px-4 py-2">@c.Document</td>
+                <td class="px-4 py-2">@c.Email</td>
+                <td class="px-4 py-2">@c.Phone</td>
+                <td class="px-4 py-2 text-right space-x-2">
+                    <a class="text-blue-700 underline" asp-action="Details" asp-route-id="@c.Id">Ver</a>
+                    <a class="text-yellow-700 underline" asp-action="Edit" asp-route-id="@c.Id">Editar</a>
+                    <a class="text-red-700 underline" asp-action="Delete" asp-route-id="@c.Id">Eliminar</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+

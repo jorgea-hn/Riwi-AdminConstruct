@@ -1,0 +1,33 @@
+@model AdminConstruct.Ryzor.Models.ViewModels.AgeViewModel
+@{
+    ViewData["Title"] = "Validar edad";
+}
+
+<h1 class="text-2xl font-semibold mb-4">Validar edad</h1>
+
+<form asp-action="Age" method="post" class="bg-white rounded-lg shadow p-6 space-y-4">
+    <div>
+        <label class="block text-sm mb-1">Edad (entero)</label>
+        <input asp-for="AgeInput" class="border rounded px-3 py-2 w-full" />
+        <span asp-validation-for="AgeInput" class="text-red-600 text-sm"></span>
+    </div>
+    <button class="px-4 py-2 bg-blue-600 text-white rounded">Validar</button>
+</form>
+
+@if (Model.AgeParsed.HasValue)
+{
+    <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded">@Model.Message</div>
+}
+
+@if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+{
+    <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded">
+        Por favor corrige los errores en el formulario.
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+

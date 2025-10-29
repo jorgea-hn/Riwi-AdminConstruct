@@ -26,10 +26,19 @@
         </div>
     </nav>
 </header>
-<div class="max-w-7xl mx-auto px-4">
-    <main role="main" class="py-6">
+<div class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-12 gap-6">
+    <aside class="col-span-12 md:col-span-3 lg:col-span-2 bg-white rounded-lg shadow p-4 h-fit">
+        <nav class="space-y-2">
+            <a class="block px-3 py-2 rounded hover:bg-gray-100" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
+            <a class="block px-3 py-2 rounded hover:bg-gray-100" asp-area="" asp-controller="Products" asp-action="Index">Productos</a>
+            <a class="block px-3 py-2 rounded hover:bg-gray-100" asp-area="" asp-controller="Customers" asp-action="Index">Clientes</a>
+            <a class="block px-3 py-2 rounded hover:bg-gray-100" asp-area="" asp-controller="Sales" asp-action="Index">Ventas</a>
+        </nav>
+    </aside>
+    <main role="main" class="col-span-12 md:col-span-9 lg:col-span-10">
         @RenderBody()
     </main>
+    
 </div>
 
 <footer class="border-t text-gray-600 bg-white">

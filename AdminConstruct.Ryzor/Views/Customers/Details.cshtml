@@ -1,0 +1,22 @@
+@model AdminConstruct.Ryzor.Models.Customer
+@{
+    ViewData["Title"] = "Detalle cliente";
+}
+
+<div class="bg-white rounded-lg shadow p-6 space-y-2">
+    <div class="text-sm text-gray-500">Nombre</div>
+    <div class="text-lg">@Model.Name</div>
+    <div class="text-sm text-gray-500">Documento</div>
+    <div>@Model.Document</div>
+    <div class="text-sm text-gray-500">Email</div>
+    <div>@Model.Email</div>
+    <div class="text-sm text-gray-500">Teléfono</div>
+    <div>@Model.Phone</div>
+</div>
+
+<div class="mt-4">
+    <a class="px-4 py-2 bg-gray-200 rounded" asp-action="Index">Volver</a>
+    <a class="px-4 py-2 bg-blue-600 text-white rounded" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
+</div>
+
+

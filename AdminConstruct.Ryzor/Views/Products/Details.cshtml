@@ -1,0 +1,22 @@
+@model AdminConstruct.Ryzor.Models.Product
+@{
+    ViewData["Title"] = "Detalle producto";
+}
+
+<div class="bg-white rounded-lg shadow p-6 space-y-2">
+    <div class="text-sm text-gray-500">Nombre</div>
+    <div class="text-lg">@Model.Name</div>
+    <div class="text-sm text-gray-500">Precio</div>
+    <div>@Model.Price.ToString("C")</div>
+    <div class="text-sm text-gray-500">Stock</div>
+    <div>@Model.StockQuantity</div>
+    <div class="text-sm text-gray-500">Descripción</div>
+    <div>@Model.Description</div>
+</div>
+
+<div class="mt-4">
+    <a class="px-4 py-2 bg-gray-200 rounded" asp-action="Index">Volver</a>
+    <a class="px-4 py-2 bg-blue-600 text-white rounded" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
+</div>
+
+
