@@ -5,7 +5,7 @@ public class Sale
 
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    public int CustomerId { get; set; }
+    public Guid CustomerId { get; set; }
     
     public Customer Customer { get; set; } = null!;
 

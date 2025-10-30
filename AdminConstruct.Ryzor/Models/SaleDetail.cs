@@ -3,13 +3,13 @@ namespace AdminConstruct.Ryzor.Models;
 public class SaleDetail
 {
 
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     
-    public int SaleId { get; set; }
+    public Guid SaleId { get; set; }
     
     public Sale Sale { get; set; } = null!;
     
-    public int ProductId { get; set; }
+    public Guid ProductId { get; set; }
     
     public Product Product { get; set; } = null!;
     
