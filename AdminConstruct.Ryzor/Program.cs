@@ -1,6 +1,7 @@
 using AdminConstruct.Ryzor.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddScoped<AdminConstruct.Ryzor.Services.ExcelImportService>();
+builder.Services.AddScoped<AdminConstruct.Ryzor.Services.ExportService>();
+builder.Services.AddScoped<AdminConstruct.Ryzor.Services.PdfReceiptService>();
 
 var app = builder.Build();
 
@@ -36,6 +40,9 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
     await IdentitySeed.EnsureSeedDataAsync(scope.ServiceProvider);
 }
+
+// EPPlus license context for noncommercial/dev
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Importar Excel";
+}
+
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-semibold">Importar datos desde Excel</h1>
+    <a class="px-4 py-2 bg-gray-200 rounded" asp-action="Sample">Descargar ejemplo</a>
+ </div>
+
+<div class="bg-white rounded-lg shadow p-6">
+    <form asp-action="Index" method="post" enctype="multipart/form-data" class="space-y-4">
+        <div>
+            <label class="block text-sm mb-1">Archivo .xlsx (datos mezclados)</label>
+            <input type="file" name="file" accept=".xlsx" class="block" />
+        </div>
+        <button class="px-4 py-2 bg-blue-600 text-white rounded">Importar</button>
+    </form>
+
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+    {
+        <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded">
+            @foreach (var state in ViewData.ModelState)
+            {
+                foreach (var error in state.Value!.Errors)
+                {
+                    <div>@error.ErrorMessage</div>
+                }
+            }
+        </div>
+    }
+</div>
+
+

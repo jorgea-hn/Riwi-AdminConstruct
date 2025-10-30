@@ -1,0 +1,55 @@
+@model AdminConstruct.Ryzor.Models.Sale
+@{
+    ViewData["Title"] = "Detalle venta";
+}
+
+<div class="bg-white rounded-lg shadow p-6 space-y-2">
+    <div><span class="text-sm text-gray-500">Fecha</span> <div>@Model.Date.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</div></div>
+    <div><span class="text-sm text-gray-500">Cliente</span> <div>@Model.Customer.Name (@Model.Customer.Document)</div></div>
+    <div class="mt-4">
+        <table class="min-w-full">
+            <thead class="bg-gray-100">
+            <tr>
+                <th class="px-4 py-2 text-left">Producto</th>
+                <th class="px-4 py-2 text-left">Cantidad</th>
+                <th class="px-4 py-2 text-left">Precio</th>
+                <th class="px-4 py-2 text-left">Subtotal</th>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                decimal total = 0;
+            }
+            @foreach (var d in Model.Details)
+            {
+                var sub = d.Quantity * d.UnitPrice;
+                total += sub;
+                <tr class="border-t">
+                    <td class="px-4 py-2">@d.Product.Name</td>
+                    <td class="px-4 py-2">@d.Quantity</td>
+                    <td class="px-4 py-2">@d.UnitPrice.ToString("C")</td>
+                    <td class="px-4 py-2">@sub.ToString("C")</td>
+                </tr>
+            }
+            <tr class="border-t">
+                <td class="px-4 py-2" colspan="3"><strong>IVA (19%)</strong></td>
+                <td class="px-4 py-2">@( (total * 0.19m).ToString("C") )</td>
+            </tr>
+            <tr class="border-t">
+                <td class="px-4 py-2" colspan="3"><strong>Total</strong></td>
+                <td class="px-4 py-2">@( (total * 1.19m).ToString("C") )</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4 flex gap-3">
+    <a class="px-4 py-2 bg-gray-200 rounded" asp-action="Index">Volver</a>
+    @if (!string.IsNullOrWhiteSpace(ViewBag.ReceiptUrl as string))
+    {
+        <a class="px-4 py-2 bg-green-600 text-white rounded" href="@ViewBag.ReceiptUrl" target="_blank">Descargar recibo PDF</a>
+    }
+</div>
+
+

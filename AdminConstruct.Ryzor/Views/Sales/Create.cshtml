@@ -1,0 +1,34 @@
+@{
+    ViewData["Title"] = "Nueva venta";
+}
+
+<h1 class="text-2xl font-semibold mb-4">Nueva venta</h1>
+
+<form asp-action="Create" method="post" class="bg-white rounded-lg shadow p-6 space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm mb-1">Cliente</label>
+            <select name="customerId" class="border rounded px-3 py-2 w-full" asp-items="ViewBag.Customers"></select>
+        </div>
+        <div>
+            <label class="block text-sm mb-1">Producto</label>
+            <select name="productId" class="border rounded px-3 py-2 w-full" asp-items="ViewBag.Products"></select>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm mb-1">Cantidad</label>
+            <input name="quantity" type="number" min="1" value="1" class="border rounded px-3 py-2 w-full" />
+        </div>
+        <div>
+            <label class="block text-sm mb-1">Precio unitario</label>
+            <input name="unitPrice" type="number" step="0.01" min="0" class="border rounded px-3 py-2 w-full" />
+        </div>
+    </div>
+    <div class="flex gap-3">
+        <button class="px-4 py-2 bg-blue-600 text-white rounded">Registrar</button>
+        <a class="px-4 py-2 bg-gray-200 rounded" asp-action="Index">Cancelar</a>
+    </div>
+</form>
+
+

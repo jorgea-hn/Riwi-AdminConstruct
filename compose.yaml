@@ -1,13 +1,78 @@
 ﻿services:
+  db:
+    image: postgres:16-alpine
+    container_name: firmeza-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=firmeza
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   adminconstruct.ryzor:
     image: adminconstruct.ryzor
     build:
       context: .
       dockerfile: AdminConstruct.Ryzor/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=firmeza
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - ADMIN_EMAIL=admin@firmeza.local
+      - ADMIN_PASSWORD=Admin123$
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - recibos_data:/app/wwwroot/recibos
 
   adminconstruct.api:
     image: adminconstruct.api
     build:
       context: .
       dockerfile: AdminConstruct.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8081
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=firmeza
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+
+  adminconstruct.blazor:
+    image: adminconstruct.blazor
+    build:
+      context: .
+      dockerfile: AdminConstruct.Blazor/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8082
+      - API_BASE_URL=http://adminconstruct.api:8081
+    depends_on:
+      - adminconstruct.api
+    ports:
+      - "8082:8082"
+
+volumes:
+  db_data:
+  recibos_data:
 
