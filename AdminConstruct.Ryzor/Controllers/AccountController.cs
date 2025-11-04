@@ -33,14 +33,21 @@ public class AccountController: Controller
         if (result.Succeeded)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
+
+            // Verificar el rol
             if (await _userManager.IsInRoleAsync(user, "Administrador"))
             {
-                return RedirectToAction("Index", "Admin"); // Dashboard de administrador
+                return RedirectToAction("Index", "Admin");
             }
-            else
+            else if (await _userManager.IsInRoleAsync(user, "Cliente"))
             {
-                return RedirectToAction("Index", "Home"); // Cliente redirige a Home
+                return RedirectToAction("Index", "Home");
             }
+
+            // Si el usuario no tiene rol definido, lo deslogueamos por seguridad
+            await _signInManager.SignOutAsync();
+            ModelState.AddModelError("", "Tu cuenta no tiene un rol asignado. Contacta al administrador.");
+            return View(model);
         }
 
         ModelState.AddModelError("", "Email o contraseña incorrectos");
