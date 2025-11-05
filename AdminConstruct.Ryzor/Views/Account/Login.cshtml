@@ -1,6 +1,6 @@
 @model AdminConstruct.Ryzor.Controllers.LoginViewModel
-
 @{
+    Layout = "_LayoutAuth";
     ViewData["Title"] = "Login";
 }
 
@@ -9,18 +9,19 @@
 <form asp-action="Login" method="post">
     <div>
         <label>Email</label>
-        <input asp-for="Email" />
-        <span asp-validation-for="Email" style="color:red"></span>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
     </div>
     <div>
         <label>Password</label>
-        <input asp-for="Password" type="password" />
-        <span asp-validation-for="Password" style="color:red"></span>
+        <input asp-for="Password" type="password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
     </div>
-    <div>
-        <input asp-for="RememberMe" /> Remember Me
+    <div class="form-check my-2">
+        <input asp-for="RememberMe" class="form-check-input" />
+        <label asp-for="RememberMe" class="form-check-label">Remember Me</label>
     </div>
-    <button type="submit">Login</button>
+    <button type="submit" class="btn btn-primary">Login</button>
 </form>
 
 @section Scripts{
