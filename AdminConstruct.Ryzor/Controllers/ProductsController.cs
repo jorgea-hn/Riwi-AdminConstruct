@@ -29,18 +29,58 @@ public class ProductsController : Controller
     }
 
     // 🔹 CREAR (POST)
+    // [HttpPost]
+    // [ValidateAntiForgeryToken]
+    // public async Task<IActionResult> Create(Product product)
+    // {
+    //     if (ModelState.IsValid)
+    //     {
+    //         _context.Add(product);
+    //         await _context.SaveChangesAsync();
+    //         return RedirectToAction(nameof(Index));
+    //     }
+    //     return View("~/Views/Admin/Products/Create.cshtml", product);
+    // }
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Product product)
     {
-        if (ModelState.IsValid)
+        try
         {
+            if (!ModelState.IsValid)
+                return View(product);
+
+            // Validar que el precio no sea negativo
+            if (product.Price < 0)
+            {
+                ModelState.AddModelError("Price", "El precio no puede ser negativo.");
+                return View(product);
+            }
+
+            // Validar que el stock sea un número válido
+            if (product.StockQuantity < 0)
+            {
+                ModelState.AddModelError("StockQuantity", "El stock debe ser mayor o igual a 0.");
+                return View(product);
+            }
+
             _context.Add(product);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        return View("~/Views/Admin/Products/Create.cshtml", product);
+        catch (FormatException)
+        {
+            ModelState.AddModelError("", "Error de formato: asegúrate de ingresar números válidos.");
+            return View(product);
+        }
+        catch (Exception ex)
+        {
+            // Mensaje general
+            ModelState.AddModelError("", $"Ocurrió un error inesperado: {ex.Message}");
+            return View(product);
+        }
     }
+
 
     // 🔹 EDITAR (GET)
     public async Task<IActionResult> Edit(Guid? id)
