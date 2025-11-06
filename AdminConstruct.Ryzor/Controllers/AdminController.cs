@@ -27,4 +27,9 @@ public class AdminController: Controller
         {
             return View(); // Vista para gestión de ventas
         }
+        
+        public IActionResult ExcelImports()
+        {
+            return View(); // Vista para gestión upload excel
+        }
     }
