@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "Carga Masiva de Datos";
+}
+
+<h1 class="mb-3">Carga Masiva de Datos desde Excel</h1>
+
+<!-- Mensajes -->
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+<form asp-action="ExcelImport" asp-controller="ExcelImport" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label for="file" class="form-label">Selecciona un archivo Excel (.xlsx)</label>
+        <input type="file" name="file" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Cargar Archivo</button>
+</form>
+
+@if (ViewBag.Log != null)
+{
+    <h3 class="mt-4">Resultados de la importación:</h3>
+    <ul>
+        @foreach (var msg in ViewBag.Log)
+        {
+            <li>@msg</li>
+        }
+    </ul>
+}
