@@ -14,7 +14,7 @@ namespace AdminConstruct.Razor.Controllers
             _context = context;
         }
 
-        // GET: Mostrar formulario de carga
+        // GET: Formulario de carga
         public IActionResult ExcelImport()
         {
             return View("~/Views/Admin/ExcelImports/ExcelImport.cshtml");
@@ -31,30 +31,30 @@ namespace AdminConstruct.Razor.Controllers
                 return RedirectToAction("ExcelImport");
             }
 
+            // Configurar licencia EPPlus
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
             // Carpeta donde se guardan los archivos
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
-            // Nombre único para evitar sobrescribir archivos
+            // Guardar el archivo temporalmente
             var fileName = $"{Guid.NewGuid()}_{file.FileName}";
             var filePath = Path.Combine(uploadsFolder, fileName);
-
-            // Guardar archivo
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
 
-            // ⚡ Configurar la licencia de EPPlus 8+ antes de usar ExcelPackage
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-
+            // Inicializar log
             var log = new List<string>();
             int insertedProducts = 0;
+            int updatedProducts = 0;
             int insertedCustomers = 0;
+            int updatedCustomers = 0;
 
-            // Abrir el archivo Excel
+            // Procesar el archivo Excel
             using var package = new ExcelPackage(new FileInfo(filePath));
             var worksheet = package.Workbook.Worksheets.FirstOrDefault();
 
@@ -70,54 +70,112 @@ namespace AdminConstruct.Razor.Controllers
             {
                 try
                 {
-                    var values = new List<string>();
-                    for (int col = 1; col <= worksheet.Dimension.Columns; col++)
-                        values.Add(worksheet.Cells[row, col].Text.Trim());
+                    string name = worksheet.Cells[row, 1].Text.Trim();
+                    string priceText = worksheet.Cells[row, 2].Text.Trim();
+                    string stockText = worksheet.Cells[row, 3].Text.Trim();
+                    string descOrEmail = worksheet.Cells[row, 4].Text.Trim();
+                    string document = worksheet.Cells[row, 5].Text.Trim();
+                    string phone = worksheet.Cells[row, 6].Text.Trim();
 
-                    // Detecta si es producto
-                    if (values.Any(v => decimal.TryParse(v, out _)) && values.Any(v => !decimal.TryParse(v, out _)))
+                    bool hasEmail = descOrEmail.Contains("@");
+
+                    // ---------------- PRODUCTO ----------------
+                    if (!hasEmail && !string.IsNullOrEmpty(name))
                     {
-                        var product = new Product
+                        decimal.TryParse(priceText, out decimal price);
+                        int.TryParse(stockText, out int stock);
+
+                        if (string.IsNullOrEmpty(name) || price <= 0)
                         {
-                            Name = values.ElementAtOrDefault(0) ?? "",
-                            Price = decimal.TryParse(values.ElementAtOrDefault(1), out var p) ? p : 0,
-                            StockQuantity = int.TryParse(values.ElementAtOrDefault(2), out var s) ? s : 0,
-                            Description = values.ElementAtOrDefault(3) ?? ""
-                        };
-                        _context.Products.Add(product);
-                        insertedProducts++;
+                            log.Add($"Fila {row}: Producto inválido (nombre o precio incorrecto).");
+                            continue;
+                        }
+
+                        var existing = _context.Products.FirstOrDefault(p => p.Name == name);
+
+                        if (existing == null)
+                        {
+                            _context.Products.Add(new Product
+                            {
+                                Name = name,
+                                Price = price,
+                                StockQuantity = stock,
+                                Description = descOrEmail
+                            });
+                            insertedProducts++;
+                            log.Add($"Fila {row}: Producto '{name}' agregado.");
+                        }
+                        else
+                        {
+                            existing.Price = price;
+                            existing.StockQuantity = stock;
+                            existing.Description = descOrEmail;
+                            _context.Products.Update(existing);
+                            updatedProducts++;
+                            log.Add($"Fila {row}: Producto '{name}' actualizado.");
+                        }
                     }
-                    // Detecta si es cliente
-                    else if (values.Any(v => v.Contains("@")))
+                    // ---------------- CLIENTE ----------------
+                    else if (hasEmail && !string.IsNullOrEmpty(name))
                     {
-                        var customer = new Customer
+                        if (string.IsNullOrEmpty(descOrEmail))
                         {
-                            Name = values.ElementAtOrDefault(0) ?? "",
-                            Email = values.ElementAtOrDefault(1) ?? "",
-                            Document = values.ElementAtOrDefault(2) ?? "",
-                            Phone = values.ElementAtOrDefault(3) ?? ""
-                        };
-                        _context.Customers.Add(customer);
-                        insertedCustomers++;
+                            log.Add($"Fila {row}: Cliente sin correo electrónico.");
+                            continue;
+                        }
+
+                        var existing = _context.Customers.FirstOrDefault(c => c.Email == descOrEmail);
+
+                        if (existing == null)
+                        {
+                            _context.Customers.Add(new Customer
+                            {
+                                Name = name,
+                                Email = descOrEmail,
+                                Document = document,
+                                Phone = phone
+                            });
+                            insertedCustomers++;
+                            log.Add($"Fila {row}: Cliente '{name}' agregado.");
+                        }
+                        else
+                        {
+                            existing.Name = name;
+                            existing.Document = document;
+                            existing.Phone = phone;
+                            _context.Customers.Update(existing);
+                            updatedCustomers++;
+                            log.Add($"Fila {row}: Cliente '{name}' actualizado.");
+                        }
                     }
                     else
                     {
-                        log.Add($"Fila {row}: no se pudo identificar el tipo de registro.");
+                        log.Add($"Fila {row}: No se pudo determinar el tipo de registro.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    log.Add($"Fila {row}: {ex.Message}");
+                    log.Add($"Fila {row}: Error - {ex.Message}");
                 }
             }
 
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = $"✅ Archivo cargado correctamente. " +
-                                         $"{insertedProducts} productos y {insertedCustomers} clientes fueron importados.";
+            // Guardar log físico
+            var logsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/logs");
+            if (!Directory.Exists(logsFolder))
+                Directory.CreateDirectory(logsFolder);
 
-            // Redirige al Dashboard (ajusta la ruta si no usas área Admin)
-            return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+            var logFile = Path.Combine(logsFolder, $"import_log_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
+            await System.IO.File.WriteAllLinesAsync(logFile, log);
+
+            TempData["SuccessMessage"] = $"✅ Importación completada: " +
+                                         $"{insertedProducts} productos nuevos, {updatedProducts} actualizados, " +
+                                         $"{insertedCustomers} clientes nuevos, {updatedCustomers} actualizados. " +
+                                         $"Log guardado en /wwwroot/logs.";
+
+            // Redirige correctamente (ajusta si usas Razor Pages)
+            return RedirectToPage("/Admin/Dashboard");
         }
     }
 }
