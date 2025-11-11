@@ -40,17 +40,21 @@ namespace AdminConstruct.Razor.Controllers
             var fileName = $"{Guid.NewGuid()}_{file.FileName}";
             var filePath = Path.Combine(uploadsFolder, fileName);
 
+            // Guardar archivo
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
 
+            // ⚡ Configurar la licencia de EPPlus 8+ antes de usar ExcelPackage
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+
             var log = new List<string>();
             int insertedProducts = 0;
             int insertedCustomers = 0;
-            
-            // ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
+            // Abrir el archivo Excel
             using var package = new ExcelPackage(new FileInfo(filePath));
             var worksheet = package.Workbook.Worksheets.FirstOrDefault();
 
@@ -109,12 +113,8 @@ namespace AdminConstruct.Razor.Controllers
 
             await _context.SaveChangesAsync();
 
-            // Mensaje de éxito
             TempData["SuccessMessage"] = $"✅ Archivo cargado correctamente. " +
                                          $"{insertedProducts} productos y {insertedCustomers} clientes fueron importados.";
-
-            // Opcional: guardar log en archivo
-            // System.IO.File.WriteAllLines(Path.Combine(uploadsFolder, "import_log.txt"), log);
 
             // Redirige al Dashboard (ajusta la ruta si no usas área Admin)
             return RedirectToAction("Index", "Dashboard", new { area = "Admin" });

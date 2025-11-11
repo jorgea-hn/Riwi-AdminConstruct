@@ -2,9 +2,7 @@ using AdminConstruct.Razor;
 using AdminConstruct.Razor.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using OfficeOpenXml;
 
-ExcelPackage.License = LicenseContext.NonCommercial;
 
 var builder = WebApplication.CreateBuilder(args);
 

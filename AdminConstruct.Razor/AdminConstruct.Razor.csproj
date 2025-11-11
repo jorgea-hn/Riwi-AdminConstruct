@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="EPPlus" Version="8.2.1" />
+      <PackageReference Include="EPPlus" Version="6.2.7" />
       <PackageReference Include="iTextSharp" Version="5.5.13.4" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.21" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.21" />
