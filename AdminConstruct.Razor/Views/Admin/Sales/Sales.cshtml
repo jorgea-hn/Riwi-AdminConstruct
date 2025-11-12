@@ -1,0 +1,42 @@
+@model IEnumerable<AdminConstruct.Ryzor.ViewModels.SaleViewModel>
+
+@{
+    ViewBag.Title = "Listado de Ventas";
+}
+
+<h2>Listado de Ventas</h2>
+
+<p>
+    <a class="btn btn-primary" href="@Url.Action("ExportSalesToPDF")">Exportar a PDF</a>
+    <a class="btn btn-success" href="@Url.Action("ExportExcel")">Exportar a Excel</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Fecha</th>
+        <th>Total</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var sale in Model)
+    {
+        var subtotal = sale.Details.Sum(d => d.Quantity * d.UnitPrice);
+        var iva = subtotal * 0.12m;
+        var total = subtotal + iva;
+
+        <tr>
+            <td>@sale.Id</td>
+            <td>@sale.CustomerName</td>
+            <td>@sale.Date.ToString("dd/MM/yyyy HH:mm")</td>
+            <td>@total.ToString("C")</td>
+            <td>
+                <a class="btn btn-info btn-sm" href="@Url.Action("Details", "Sales", new { id = sale.Id })">Detalles</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

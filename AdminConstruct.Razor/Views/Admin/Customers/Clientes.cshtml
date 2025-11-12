@@ -12,6 +12,16 @@
 
 <a asp-action="Create" class="btn btn-success mb-3">+ Nuevo Cliente</a>
 
+<div class="mb-3">
+    <a asp-controller="Export" asp-action="ExportProductsToExcel" class="btn btn-primary">
+        📥 Exportar Productos a Excel
+    </a>
+    <a asp-controller="Export" asp-action="ExportClientsToPDF" class="btn btn-secondary">
+        📝 Exportar Clientes a PDF
+    </a>
+</div>
+
+
 <table class="table table-striped">
     <thead>
     <tr>

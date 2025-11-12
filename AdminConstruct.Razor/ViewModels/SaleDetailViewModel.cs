@@ -16,4 +16,6 @@ public class SaleDetailViewModel
     [Required(ErrorMessage = "El precio unitario es obligatorio.")]
     [Range(0.01, double.MaxValue, ErrorMessage = "El precio unitario debe ser mayor que 0.")]
     public decimal UnitPrice { get; set; }
+    
+    public string ProductName { get; set; } = string.Empty; 
 }

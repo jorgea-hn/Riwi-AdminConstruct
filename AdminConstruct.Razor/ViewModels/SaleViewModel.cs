@@ -7,7 +7,8 @@ public class SaleViewModel
     public Guid Id { get; set; }
 
     [Required(ErrorMessage = "Debe seleccionar un cliente.")]
-    public Guid CustomerId { get; set; }
+    // public Guid CustomerId { get; set; }
+    public string CustomerName { get; set; } = string.Empty;
 
     public DateTime Date { get; set; } = DateTime.UtcNow;
 

@@ -16,6 +16,21 @@
             </div>
         </div>
     </div>
+    
+    
+    <div class="col-md-8">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Exportar Información</div>
+            <div class="card-body d-flex gap-2">
+                <a asp-controller="Export" asp-action="ExportProductsToExcel" class="btn btn-light text-dark">
+                    📦 Exportar Productos a Excel
+                </a>
+                <a asp-controller="Export" asp-action="ExportProductsToPDF" class="btn btn-light text-dark">
+                    📝 Exportar Productos a PDF
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="card mt-4">
