@@ -7,8 +7,13 @@
 <h2>Listado de Ventas</h2>
 
 <p>
-    <a class="btn btn-primary" href="@Url.Action("ExportSalesToPDF")">Exportar a PDF</a>
-    <a class="btn btn-success" href="@Url.Action("ExportExcel")">Exportar a Excel</a>
+    <a asp-controller="Export" asp-action="ExportSalesToPDF" class="btn btn-primary">
+        Exportar a PDF
+    </a>
+    <a asp-controller="Export" asp-action="ExportSalesToExcel" class="btn btn-success">
+        Exportar a Excel
+    </a>
+
 </p>
 
 <table class="table table-bordered table-striped">
