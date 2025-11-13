@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminConstruct.Razor", "AdminConstruct.Razor\AdminConstruct.Razor.csproj", "{C0647B6A-522D-4DEF-9805-ECBA9D25610D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminConstruct.Web", "AdminConstruct.Web\AdminConstruct.Web.csproj", "{C0647B6A-522D-4DEF-9805-ECBA9D25610D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0229E2AD-9DEC-48BE-9FAE-3CD0963464AF}"
 	ProjectSection(SolutionItems) = preProject

@@ -1,4 +1,4 @@
-using AdminConstruct.Razor.Data;
+using AdminConstruct.Web.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
@@ -6,7 +6,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 
-namespace AdminConstruct.Razor.Controllers
+namespace AdminConstruct.Web.Controllers
 {
     public class ExportController : Controller
     {

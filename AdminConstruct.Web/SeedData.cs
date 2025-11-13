@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace AdminConstruct.Razor;
+namespace AdminConstruct.Web;
 
 public class SeedData
 {

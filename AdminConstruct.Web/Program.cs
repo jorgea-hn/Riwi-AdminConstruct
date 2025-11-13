@@ -1,5 +1,5 @@
-using AdminConstruct.Razor;
-using AdminConstruct.Razor.Data;
+using AdminConstruct.Web;
+using AdminConstruct.Web.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AdminConstruct.Razor.Controllers;
+namespace AdminConstruct.Web.Controllers;
 
 [Authorize(Policy = "Administrador")] // Solo acceso a administradores
 public class AdminController: Controller

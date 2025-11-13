@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AdminConstruct.Razor.Models;
+namespace AdminConstruct.Web.Models;
 
 public class Customer
 {

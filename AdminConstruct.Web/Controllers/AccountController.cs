@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AdminConstruct.Razor.Controllers;
+namespace AdminConstruct.Web.Controllers;
 
 public class AccountController: Controller
 {

@@ -1,8 +1,8 @@
-using AdminConstruct.Razor.Models;
+using AdminConstruct.Web.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace AdminConstruct.Razor.Data;
+namespace AdminConstruct.Web.Data;
 
 
 public class ApplicationDbContext : IdentityDbContext

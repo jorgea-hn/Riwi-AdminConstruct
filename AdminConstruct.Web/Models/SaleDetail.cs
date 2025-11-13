@@ -1,4 +1,4 @@
-namespace AdminConstruct.Razor.Models;
+namespace AdminConstruct.Web.Models;
 
 public class SaleDetail
 {

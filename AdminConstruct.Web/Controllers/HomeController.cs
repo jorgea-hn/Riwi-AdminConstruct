@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using AdminConstruct.Razor.Models;
+using AdminConstruct.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AdminConstruct.Razor.Controllers;
+namespace AdminConstruct.Web.Controllers;
 
 public class HomeController : Controller
 {

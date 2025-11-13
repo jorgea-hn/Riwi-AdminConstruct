@@ -1,9 +1,9 @@
-using AdminConstruct.Razor.Data;
-using AdminConstruct.Razor.Models;
+using AdminConstruct.Web.Data;
+using AdminConstruct.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 
-namespace AdminConstruct.Razor.Controllers
+namespace AdminConstruct.Web.Controllers
 {
     public class ExcelImportController : Controller
     {
