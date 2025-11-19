@@ -1,15 +1,10 @@
-namespace AdminConstruct.Web.Models;
+namespace AdminConstruct.API.DTOs;
 
-public class Product
+public class ProductDto
 {
-
-    public Guid Id { get; set; } = Guid.NewGuid(); 
-    
+    public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    
     public decimal Price { get; set; }
-    
     public int StockQuantity { get; set; }
-
     public string? Description { get; set; }
 }

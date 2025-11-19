@@ -1,10 +1,8 @@
-using System.ComponentModel.DataAnnotations;
+namespace AdminConstruct.API.DTOs;
 
-namespace AdminConstruct.Web.Models;
-
-public class Customer
+public class CustomerDto
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Document { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;

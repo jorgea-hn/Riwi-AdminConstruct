@@ -32,4 +32,8 @@
       <Folder Include="wwwroot\uploads\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\AdminConstruct.Core\AdminConstruct.Core.csproj" />
+    </ItemGroup>
+
 </Project>
