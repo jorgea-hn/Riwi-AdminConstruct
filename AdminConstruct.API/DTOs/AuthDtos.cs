@@ -1,5 +1,6 @@
 namespace AdminConstruct.API.DTOs
 {
+    // prueba
     // DTO para registrar un usuario
     public class RegisterDto
     {
