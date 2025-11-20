@@ -1,17 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AdminConstruct.Ryzor.ViewModels;
-
-public class SaleViewModel
+namespace AdminConstruct.Web.ViewModels
 {
-    public Guid Id { get; set; }
+    public class SaleViewModel
+    {
+        public Guid Id { get; set; }
 
-    [Required(ErrorMessage = "Debe seleccionar un cliente.")]
-    // public Guid CustomerId { get; set; }
-    public string CustomerName { get; set; } = string.Empty;
+        [Required(ErrorMessage = "El cliente es obligatorio.")]
+        public Guid CustomerId { get; set; }
 
-    public DateTime Date { get; set; } = DateTime.UtcNow;
+        public DateTime Date { get; set; }
 
-    [Required(ErrorMessage = "Debe agregar al menos un producto a la venta.")]
-    public List<SaleDetailViewModel> Details { get; set; } = new();
+        public decimal TotalAmount { get; set; }
+
+        public string? ReceiptUrl { get; set; }
+
+        public List<SaleDetailViewModel> Details { get; set; } = new();
+    }
 }

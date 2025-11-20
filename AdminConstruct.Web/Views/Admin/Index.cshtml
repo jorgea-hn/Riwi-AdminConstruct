@@ -1,54 +1,138 @@
+@model AdminConstruct.Web.ViewModels.DashboardViewModel
+
 @{
     ViewData["Title"] = "Dashboard Administrativo";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Panel Administrativo</h1>
+    <h1 class="h3 mb-0 text-gray-800">Resumen General</h1>
 </div>
 
 <div class="row g-4">
-    <!-- Tarjeta Productos -->
-    <div class="col-md-4">
-        <div class="card shadow-sm border-left-primary h-100">
-            <div class="card-body d-flex align-items-center">
-                <div class="me-3">
-                    <i class="bi bi-box-seam fs-1 text-primary"></i>
-                </div>
-                <div>
-                    <h5 class="card-title mb-1">Productos</h5>
-                    <p class="card-text mb-0">@ViewBag.TotalProductos productos registrados</p>
+
+    <!-- Tarjeta Ingresos Totales -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-accent shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-accent text-uppercase mb-1">Ingresos Totales</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalRevenue.ToString("C")</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Tarjeta Clientes -->
-    <div class="col-md-4">
-        <div class="card shadow-sm border-left-success h-100">
-            <div class="card-body d-flex align-items-center">
-                <div class="me-3">
-                    <i class="bi bi-people fs-1 text-success"></i>
-                </div>
-                <div>
-                    <h5 class="card-title mb-1">Clientes</h5>
-                    <p class="card-text mb-0">@ViewBag.TotalClientes clientes registrados</p>
+    <!-- Tarjeta Total Ventas -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <a asp-area="Admin" asp-controller="Sales" asp-action="Index" class="card-link">
+            <div class="card border-left-main shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-main text-uppercase mb-1">Total de Ventas</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalSales</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
-    <!-- Tarjeta Ventas -->
-    <div class="col-md-4">
-        <div class="card shadow-sm border-left-warning h-100">
-            <div class="card-body d-flex align-items-center">
-                <div class="me-3">
-                    <i class="bi bi-cart fs-1 text-warning"></i>
-                </div>
-                <div>
-                    <h5 class="card-title mb-1">Ventas</h5>
-                    <p class="card-text mb-0">@ViewBag.TotalVentas ventas realizadas</p>
+    <!-- Tarjeta Total Productos -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="card-link">
+            <div class="card border-left-main shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-main text-uppercase mb-1">Total de Productos</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalProducts</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-box-open fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </a>
+    </div>
+
+    <!-- Tarjeta Total Clientes -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <a asp-area="Admin" asp-controller="Customers" asp-action="Index" class="card-link">
+            <div class="card border-left-main shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-main text-uppercase mb-1">Total de Clientes</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalCustomers</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Tarjeta Total Maquinaria -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <a asp-area="Admin" asp-controller="Machinery" asp-action="Index" class="card-link">
+            <div class="card border-left-main shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-main text-uppercase mb-1">Total de Maquinaria</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalMachinery</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-hard-hat fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
     </div>
 </div>
+
+<style>
+    :root {
+        --color-principal: #0d1b2a;
+        --color-acento: #FF8C00;
+    }
+
+    .border-left-accent {
+        border-left: .25rem solid var(--color-acento) !important;
+    }
+
+    .text-accent {
+        color: var(--color-acento) !important;
+    }
+
+    .border-left-main {
+        border-left: .25rem solid var(--color-principal) !important;
+    }
+
+    .text-main {
+        color: var(--color-principal) !important;
+    }
+
+    .card-link {
+        text-decoration: none;
+    }
+
+    .card-link .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+</style>

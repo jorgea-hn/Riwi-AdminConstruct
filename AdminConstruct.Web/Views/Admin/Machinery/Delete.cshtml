@@ -1,0 +1,43 @@
+@model AdminConstruct.Web.Models.Machinery
+
+@{
+    ViewData["Title"] = "Eliminar Maquinaria";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">Confirmar Eliminación</h4>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">¿Estás seguro de que quieres eliminar esta maquinaria?</h5>
+                <p>Esta acción no se puede deshacer.</p>
+                
+                <hr />
+
+                <dl class="row">
+                    <dt class = "col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+                    <dd class = "col-sm-9">@Html.DisplayFor(model => model.Name)</dd>
+
+                    <dt class = "col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
+                    <dd class = "col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+
+                    <dt class = "col-sm-3">@Html.DisplayNameFor(model => model.Stock)</dt>
+                    <dd class = "col-sm-9">@Html.DisplayFor(model => model.Stock)</dd>
+
+                    <dt class = "col-sm-3">@Html.DisplayNameFor(model => model.Price)</dt>
+                    <dd class = "col-sm-9">@Html.DisplayFor(model => model.Price)</dd>
+                </dl>
+                
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-flex justify-content-end mt-4">
+                        <a asp-action="Index" class="btn btn-secondary me-2">Cancelar</a>
+                        <button type="submit" class="btn btn-danger">Eliminar Definitivamente</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

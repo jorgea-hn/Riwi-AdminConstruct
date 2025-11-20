@@ -1,35 +1,33 @@
+using AdminConstruct.Web.Data;
+using AdminConstruct.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdminConstruct.Web.Controllers;
 
-[Authorize(Policy = "Administrador")] // Solo acceso a administradores
-public class AdminController: Controller
+[Area("Admin")]
+[Authorize(Roles = "Admin")]
+public class AdminController : Controller
 {
-   
-    
-        public IActionResult Index()
-        {
-            return View(); // Aquí va la vista principal del dashboard
-        }
+    private readonly ApplicationDbContext _context;
 
-        public IActionResult Productos()
-        {
-            return View(); // Vista para gestión de productos
-        }
-
-        public IActionResult Clientes()
-        {
-            return View(); // Vista para gestión de clientes
-        }
-
-        public IActionResult Ventas()
-        {
-            return View(); // Vista para gestión de ventas
-        }
-        
-        public IActionResult ExcelImports()
-        {
-            return View(); // Vista para gestión upload excel
-        }
+    public AdminController(ApplicationDbContext context)
+    {
+        _context = context;
     }
+
+    public async Task<IActionResult> Index()
+    {
+        var viewModel = new DashboardViewModel
+        {
+            TotalProducts = await _context.Products.CountAsync(),
+            TotalMachinery = await _context.Machineries.CountAsync(),
+            TotalCustomers = await _context.Customers.CountAsync(),
+            TotalSales = await _context.Sales.CountAsync(),
+            TotalRevenue = await _context.Sales.SelectMany(s => s.Details).SumAsync(d => d.UnitPrice * d.Quantity)
+        };
+
+        return View(viewModel);
+    }
+}

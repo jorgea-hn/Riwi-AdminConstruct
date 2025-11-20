@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace AdminConstruct.Web.Models;
 
 public class SaleDetail
@@ -16,4 +18,7 @@ public class SaleDetail
     public int Quantity { get; set; }
     
     public decimal UnitPrice { get; set; }
+
+    [NotMapped]
+    public decimal Subtotal => Quantity * UnitPrice;
 }

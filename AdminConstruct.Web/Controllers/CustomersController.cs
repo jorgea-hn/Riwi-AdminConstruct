@@ -1,177 +1,160 @@
-using AdminConstruct.Ryzor.ViewModels;
+using AdminConstruct.Web.ViewModels;
 using AdminConstruct.Web.Data;
 using AdminConstruct.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
-namespace AdminConstruct.Web.Controllers
+namespace AdminConstruct.Web.Controllers;
+
+[Area("Admin")]
+[Authorize(Roles = "Admin")]
+public class CustomersController : Controller
 {
-    public class CustomersController : Controller
+    private readonly ApplicationDbContext _context;
+
+    public CustomersController(ApplicationDbContext context)
     {
-        private readonly ApplicationDbContext _context;
+        _context = context;
+    }
 
-        public CustomersController(ApplicationDbContext context)
+    // GET: /Admin/Customers
+    public async Task<IActionResult> Index(string search)
+    {
+        var query = _context.Customers.AsQueryable();
+
+        if (!string.IsNullOrEmpty(search))
         {
-            _context = context;
+            query = query.Where(c => c.Name.Contains(search) || c.Document.Contains(search));
         }
 
-        // LISTAR + BÚSQUEDA
-        public async Task<IActionResult> Index(string search)
+        var customers = await query
+            .Select(c => new CustomerViewModel
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Document = c.Document,
+                Email = c.Email,
+                Phone = c.Phone
+            })
+            .ToListAsync();
+
+        return View(customers);
+    }
+
+    // GET: /Admin/Customers/Create
+    public IActionResult Create() => View(new CustomerViewModel());
+
+    // POST: /Admin/Customers/Create
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(CustomerViewModel vm)
+    {
+        if (!ModelState.IsValid) return View(vm);
+
+        var customer = new Customer
         {
-            var query = _context.Customers.AsQueryable();
+            Id = vm.Id == Guid.Empty ? Guid.NewGuid() : vm.Id,
+            Name = vm.Name,
+            Document = vm.Document,
+            Email = vm.Email,
+            Phone = vm.Phone
+        };
 
-            if (!string.IsNullOrEmpty(search))
-            {
-                query = query.Where(c => c.Name.Contains(search) || c.Document.Contains(search));
-            }
+        _context.Add(customer);
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
 
-            var customers = await query
-                .Select(c => new CustomerViewModel
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                    Document = c.Document,
-                    Email = c.Email,
-                    Phone = c.Phone
-                })
-                .ToListAsync();
+    // GET: /Admin/Customers/Edit/5
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null) return NotFound();
+        var customer = await _context.Customers.FindAsync(id);
+        if (customer == null) return NotFound();
 
-            return View("~/Views/Admin/Customers/Clientes.cshtml", customers);
-        }
-
-        // CREAR
-        public IActionResult Create() => View("~/Views/Admin/Customers/Create.cshtml", new CustomerViewModel());
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CustomerViewModel vm)
+        var vm = new CustomerViewModel
         {
-            if (!ModelState.IsValid)
-                return View("~/Views/Admin/Customers/Create.cshtml", vm);
+            Id = customer.Id,
+            Name = customer.Name,
+            Document = customer.Document,
+            Email = customer.Email,
+            Phone = customer.Phone
+        };
 
-            var customer = new Customer
-            {
-                Id = vm.Id == Guid.Empty ? Guid.NewGuid() : vm.Id,
-                Name = vm.Name,
-                Document = vm.Document,
-                Email = vm.Email,
-                Phone = vm.Phone
-            };
+        return View(vm);
+    }
 
-            try
-            {
-                _context.Add(customer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", $"Error al guardar el cliente: {ex.Message}");
-                return View("~/Views/Admin/Customers/Create.cshtml", vm);
-            }
-        }
+    // POST: /Admin/Customers/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Guid id, CustomerViewModel vm)
+    {
+        if (id != vm.Id) return NotFound();
+        if (!ModelState.IsValid) return View(vm);
 
-        // EDITAR
-        public async Task<IActionResult> Edit(Guid? id)
+        var customer = await _context.Customers.FindAsync(id);
+        if (customer == null) return NotFound();
+
+        customer.Name = vm.Name;
+        customer.Document = vm.Document;
+        customer.Email = vm.Email;
+        customer.Phone = vm.Phone;
+
+        _context.Update(customer);
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    // GET: /Admin/Customers/Details/5
+    public async Task<IActionResult> Details(Guid? id)
+    {
+        if (id == null) return NotFound();
+        var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
+        if (customer == null) return NotFound();
+
+        var vm = new CustomerViewModel
         {
-            if (id == null) return NotFound();
+            Id = customer.Id,
+            Name = customer.Name,
+            Document = customer.Document,
+            Email = customer.Email,
+            Phone = customer.Phone
+        };
 
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null) return NotFound();
+        return View(vm);
+    }
 
-            var vm = new CustomerViewModel
-            {
-                Id = customer.Id,
-                Name = customer.Name,
-                Document = customer.Document,
-                Email = customer.Email,
-                Phone = customer.Phone
-            };
+    // GET: /Admin/Customers/Delete/5
+    public async Task<IActionResult> Delete(Guid? id)
+    {
+        if (id == null) return NotFound();
+        var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
+        if (customer == null) return NotFound();
 
-            return View("~/Views/Admin/Customers/Edit.cshtml", vm);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, CustomerViewModel vm)
+        var vm = new CustomerViewModel
         {
-            if (id != vm.Id) return NotFound();
+            Id = customer.Id,
+            Name = customer.Name,
+            Document = customer.Document,
+            Email = customer.Email,
+            Phone = customer.Phone
+        };
 
-            if (!ModelState.IsValid)
-                return View("~/Views/Admin/Customers/Edit.cshtml", vm);
+        return View(vm);
+    }
 
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null) return NotFound();
-
-            customer.Name = vm.Name;
-            customer.Document = vm.Document;
-            customer.Email = vm.Email;
-            customer.Phone = vm.Phone;
-
-            try
-            {
-                _context.Update(customer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (DbUpdateException ex)
-            {
-                ModelState.AddModelError("", $"Error al actualizar el cliente: {ex.Message}");
-                return View("~/Views/Admin/Customers/Edit.cshtml", vm);
-            }
-        }
-
-        // DETALLES
-        public async Task<IActionResult> Details(Guid? id)
+    // POST: /Admin/Customers/Delete/5
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(Guid id)
+    {
+        var customer = await _context.Customers.FindAsync(id);
+        if (customer != null)
         {
-            if (id == null) return NotFound();
-
-            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
-            if (customer == null) return NotFound();
-
-            var vm = new CustomerViewModel
-            {
-                Id = customer.Id,
-                Name = customer.Name,
-                Document = customer.Document,
-                Email = customer.Email,
-                Phone = customer.Phone
-            };
-
-            return View("~/Views/Admin/Customers/Details.cshtml", vm);
+            _context.Customers.Remove(customer);
+            await _context.SaveChangesAsync();
         }
-
-        // ELIMINAR
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null) return NotFound();
-
-            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
-            if (customer == null) return NotFound();
-
-            var vm = new CustomerViewModel
-            {
-                Id = customer.Id,
-                Name = customer.Name,
-                Document = customer.Document,
-                Email = customer.Email,
-                Phone = customer.Phone
-            };
-
-            return View("~/Views/Admin/Customers/Delete.cshtml", vm);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer != null)
-            {
-                _context.Customers.Remove(customer);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction(nameof(Index));
-        }
+        return RedirectToAction(nameof(Index));
     }
 }

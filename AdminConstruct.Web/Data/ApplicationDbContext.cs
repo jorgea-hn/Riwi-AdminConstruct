@@ -1,10 +1,8 @@
-
 using AdminConstruct.Web.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdminConstruct.Web.Data;
-
 
 public class ApplicationDbContext : IdentityDbContext
 {
@@ -17,4 +15,5 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Sale> Sales { get; set; }
     public DbSet<SaleDetail> SaleDetails { get; set; }
+    public DbSet<Machinery> Machineries { get; set; }
 }

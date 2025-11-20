@@ -1,0 +1,138 @@
+/* Estilos para el Layout de Administración */
+
+:root {
+    /* Paleta de Colores Personalizada */
+    --color-principal: #0d1b2a; /* Azul Marino Oscuro */
+    --color-secundario: #f8f9fa; /* Gris Claro / Blanco */
+    --color-acento: #FF8C00; /* Naranja Intenso */
+    --color-texto-principal: #ffffff; /* Texto sobre fondos oscuros */
+    --color-texto-secundario: #343a40; /* Texto sobre fondos claros */
+    
+    --sidebar-width: 260px;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--color-secundario);
+    color: var(--color-texto-secundario);
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: var(--color-principal);
+    padding-top: 1rem;
+    transition: all 0.3s;
+    z-index: 1030;
+}
+
+.sidebar-header {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1rem;
+}
+
+.sidebar-brand {
+    color: var(--color-texto-principal);
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-brand:hover {
+    color: var(--color-acento);
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding-left: 0;
+}
+
+.sidebar-link {
+    display: block;
+    padding: 0.8rem 1.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-link i {
+    width: 20px;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--color-texto-principal);
+}
+
+.sidebar-link.active {
+    background-color: var(--color-acento);
+    color: var(--color-texto-principal);
+    font-weight: 700;
+}
+
+/* Botones Primarios (usando el color de acento) */
+.btn-primary {
+    background-color: var(--color-acento);
+    border-color: var(--color-acento);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #e67e00; /* Un tono más oscuro de naranja para el hover */
+    border-color: #e67e00;
+}
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 0;
+    transition: margin-left 0.3s;
+}
+
+.topbar {
+    height: 60px;
+    background-color: var(--color-texto-principal); /* Fondo blanco */
+    border-bottom: 1px solid #dee2e6;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.dropdown-item i {
+    width: 20px;
+}
+
+.table-responsive {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-radius: .375rem;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    background-color: var(--color-texto-principal);
+    border-bottom: 1px solid #efefef;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+    .sidebar {
+        left: -260px;
+    }
+    .sidebar.active {
+        left: 0;
+    }
+    .main-content {
+        margin-left: 0;
+    }
+}
