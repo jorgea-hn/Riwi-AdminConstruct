@@ -25,6 +25,16 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// *** AÑADIDO: INICIO DE LA CONFIGURACIÓN DE VISTAS ***
+// Esto le enseña al motor de vistas a buscar también en la carpeta /Views/Admin/
+builder.Services.Configure<Microsoft.AspNetCore.Mvc.Razor.RazorViewEngineOptions>(options =>
+{
+    // {0} = Nombre de la Acción (ej. Index)
+    // {1} = Nombre del Controlador (ej. Machinery)
+    options.ViewLocationFormats.Add("/Views/Admin/{1}/{0}.cshtml");
+    options.ViewLocationFormats.Add("/Views/Admin/Shared/{0}.cshtml");
+});
+// *** FIN DE LA CONFIGURACIÓN DE VISTAS ***
 
 
 builder.Services.AddAuthorization(options =>
@@ -75,4 +85,3 @@ app.MapControllerRoute(
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();
-

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AdminConstruct.Web.Controllers;
 
-[Area("Admin")]
+// [Area("Admin")] // <-- ELIMINADO
 [Authorize(Roles = "Admin")]
 public class AdminController : Controller
 {
@@ -17,6 +17,7 @@ public class AdminController : Controller
         _context = context;
     }
 
+    // La vista para esta acción se buscará en /Views/Admin/Index.cshtml
     public async Task<IActionResult> Index()
     {
         var viewModel = new DashboardViewModel

@@ -11,7 +11,6 @@ using QuestPDF.Infrastructure;
 
 namespace AdminConstruct.Web.Controllers;
 
-[Area("Admin")]
 [Authorize(Roles = "Admin")]
 public class MachineryController : Controller
 {
@@ -29,6 +28,7 @@ public class MachineryController : Controller
     public async Task<IActionResult> Index()
     {
         var machineries = await _context.Machineries.ToListAsync();
+        // La vista se buscará en /Views/Admin/Machinery/Index.cshtml gracias a la configuración en Program.cs
         return View(machineries);
     }
 
@@ -126,6 +126,7 @@ public class MachineryController : Controller
             worksheet.Cells[i + 2, 1].Value = machineries[i].Name;
             worksheet.Cells[i + 2, 2].Value = machineries[i].Stock;
             worksheet.Cells[i + 2, 3].Value = machineries[i].Price;
+            // *** CORREGIDO: La fila ahora es 'i + 2' para alinear los datos ***
             worksheet.Cells[i + 2, 4].Value = machineries[i].IsActive ? "Activo" : "Inactivo";
         }
 
