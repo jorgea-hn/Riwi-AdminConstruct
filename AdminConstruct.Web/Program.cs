@@ -43,9 +43,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Cliente", policy => policy.RequireRole("Cliente"));
 });
 
+// *** CORREGIDO: Ruta de Acceso Denegado ***
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.AccessDeniedPath = "/AccessDenied";
+    options.AccessDeniedPath = "/Home/AccessDenied"; 
 });
 
 

@@ -1,6 +1,32 @@
 @{
     ViewData["Title"] = "Acceso Denegado";
+    // Usando el layout principal para usuarios no autenticados o sin permisos
+    Layout = "~/Views/Shared/_Layout.cshtml"; 
 }
 
-<h1>Acceso Denegado</h1>
-<p>No tienes permisos para acceder a esta sección.</p>
+<header class="bg-danger text-white text-center p-5">
+    <div class="container">
+        <h1 class="display-4">Acceso Denegado</h1>
+        <p class="lead">No tienes los permisos necesarios para ver esta página.</p>
+    </div>
+</header>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">¿Qué ha pasado?</h5>
+                    <p class="card-text">
+                        El recurso al que intentas acceder está protegido y requiere un nivel de autorización específico (por ejemplo, el rol de "Administrador").
+                    </p>
+                    <p class="card-text">
+                        Tu cuenta actual no posee dichos permisos.
+                    </p>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-primary mt-3">Iniciar Sesión con otra cuenta</a>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary mt-3">Volver al Inicio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

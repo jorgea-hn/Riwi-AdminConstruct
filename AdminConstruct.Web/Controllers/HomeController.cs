@@ -23,6 +23,13 @@ public class HomeController : Controller
         return View();
     }
 
+    // *** AÑADIDO: Acción para la página de Acceso Denegado ***
+    public IActionResult AccessDenied()
+    {
+        // Esta acción simplemente muestra la vista AccessDenied.cshtml
+        return View(); 
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
