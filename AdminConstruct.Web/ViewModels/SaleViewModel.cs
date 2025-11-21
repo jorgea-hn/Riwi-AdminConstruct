@@ -8,6 +8,7 @@ namespace AdminConstruct.Web.ViewModels
 
         [Required(ErrorMessage = "El cliente es obligatorio.")]
         
+        //prueba
         public Guid CustomerId { get; set; }
 
         public DateTime Date { get; set; }
