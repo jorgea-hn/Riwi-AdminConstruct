@@ -7,9 +7,12 @@ namespace AdminConstruct.Web.ViewModels
         public Guid Id { get; set; }
 
         [Required(ErrorMessage = "El cliente es obligatorio.")]
+        
         public Guid CustomerId { get; set; }
 
         public DateTime Date { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
+
 
         public decimal TotalAmount { get; set; }
 
