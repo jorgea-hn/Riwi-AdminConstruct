@@ -9,54 +9,70 @@ namespace AdminConstruct.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SalesController : ControllerBase
-{
-    private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
-
-    public SalesController(ApplicationDbContext context, IMapper mapper)
+    public class SalesController : ControllerBase
     {
-        _context = context;
-        _mapper = mapper;
-    }
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly AdminConstruct.API.Services.IEmailService _emailService;
 
-    // GET ALL
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var sales = await _context.Sales
-            .Include(s => s.Customer)
-            .Include(s => s.Details)
-            .ThenInclude(d => d.Product)
-            .ToListAsync();
+        public SalesController(ApplicationDbContext context, IMapper mapper, AdminConstruct.API.Services.IEmailService emailService)
+        {
+            _context = context;
+            _mapper = mapper;
+            _emailService = emailService;
+        }
 
-        return Ok(_mapper.Map<List<SaleDto>>(sales));
-    }
+        // GET ALL
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var sales = await _context.Sales
+                .Include(s => s.Customer)
+                .Include(s => s.Details)
+                .ThenInclude(d => d.Product)
+                .ToListAsync();
 
-    // GET BY ID
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
-    {
-        var sale = await _context.Sales
-            .Include(s => s.Customer)
-            .Include(s => s.Details)
-            .ThenInclude(d => d.Product)
-            .FirstOrDefaultAsync(s => s.Id == id);
+            return Ok(_mapper.Map<List<SaleDto>>(sales));
+        }
 
-        if (sale == null) return NotFound();
+        // GET BY ID
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var sale = await _context.Sales
+                .Include(s => s.Customer)
+                .Include(s => s.Details)
+                .ThenInclude(d => d.Product)
+                .FirstOrDefaultAsync(s => s.Id == id);
 
-        return Ok(_mapper.Map<SaleDto>(sale));
-    }
+            if (sale == null) return NotFound();
 
-    // CREATE SALE
-    [HttpPost]
-    public async Task<IActionResult> Create(SaleDto dto)
-    {
-        var sale = _mapper.Map<Sale>(dto);
+            return Ok(_mapper.Map<SaleDto>(sale));
+        }
 
-        _context.Sales.Add(sale);
-        await _context.SaveChangesAsync();
+        // CREATE SALE
+        [HttpPost]
+        public async Task<IActionResult> Create(SaleDto dto)
+        {
+            var sale = _mapper.Map<Sale>(dto);
 
-        return Ok(_mapper.Map<SaleDto>(sale));
-    }
+            _context.Sales.Add(sale);
+            await _context.SaveChangesAsync();
+
+            // Obtener cliente para enviar correo
+            var customer = await _context.Customers.FindAsync(sale.CustomerId);
+            if (customer != null && !string.IsNullOrEmpty(customer.Email))
+            {
+                try
+                {
+                    await _emailService.SendEmailAsync(customer.Email, "Confirmación de Compra", $"<h1>¡Gracias por tu compra!</h1><p>Tu pedido con ID {sale.Id} ha sido registrado exitosamente.</p>");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error enviando correo: {ex.Message}");
+                }
+            }
+
+            return Ok(_mapper.Map<SaleDto>(sale));
+        }
 }

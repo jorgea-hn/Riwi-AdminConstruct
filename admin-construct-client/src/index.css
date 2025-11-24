@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+/* Custom theme colors */
+@theme {
+  --color-primary: #0d1b2a;
+  --color-primary-dark: #1b263b;
+  --color-primary-light: #415a77;
+  
+  --color-secondary: #FF8C00;
+  --color-secondary-dark: #e67e00;
+  --color-secondary-light: #ffa500;
+  
+  --color-accent: #FF8C00;
+  
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #343a40;
+  --color-text-light: #e0e1dd;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

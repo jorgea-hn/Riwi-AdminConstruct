@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AdminConstruct.Web.Controllers;
 
 // [Area("Admin")] // <-- ELIMINADO
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Administrador")]
 public class AdminController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -26,7 +26,13 @@ public class AdminController : Controller
             TotalMachinery = await _context.Machineries.CountAsync(),
             TotalCustomers = await _context.Customers.CountAsync(),
             TotalSales = await _context.Sales.CountAsync(),
-            TotalRevenue = await _context.Sales.SelectMany(s => s.Details).SumAsync(d => d.UnitPrice * d.Quantity)
+            TotalRevenue = await _context.Sales.SelectMany(s => s.Details).SumAsync(d => d.UnitPrice * d.Quantity),
+            
+            // Estadísticas de Alquileres
+            ActiveRentals = await _context.MachineryRentals.CountAsync(r => r.IsActive),
+            CompletedRentals = await _context.MachineryRentals.CountAsync(r => !r.IsActive),
+            RentalRevenue = await _context.MachineryRentals.SumAsync(r => r.TotalAmount),
+            OverdueRentals = await _context.MachineryRentals.CountAsync(r => r.IsActive && DateTime.Now > r.EndDateTime)
         };
 
         return View(viewModel);

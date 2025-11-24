@@ -7,5 +7,11 @@ namespace AdminConstruct.Web.ViewModels
         public int TotalCustomers { get; set; }
         public int TotalSales { get; set; }
         public decimal TotalRevenue { get; set; }
+        
+        // Estadísticas de Alquileres
+        public int ActiveRentals { get; set; }
+        public int CompletedRentals { get; set; }
+        public decimal RentalRevenue { get; set; }
+        public int OverdueRentals { get; set; }
     }
 }

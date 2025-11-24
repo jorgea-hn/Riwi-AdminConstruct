@@ -54,9 +54,28 @@ builder.Services.AddAuthentication(opt =>
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // -----------------------------
+// EMAIL SERVICE
+// -----------------------------
+builder.Services.AddScoped<AdminConstruct.API.Services.IEmailService, AdminConstruct.API.Services.EmailService>();
+
+// -----------------------------
 // CONTROLADORES
 // -----------------------------
 builder.Services.AddControllers();
+
+// -----------------------------
+// CORS
+// -----------------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
 
 // -----------------------------
 // SWAGGER + JWT CONFIG
@@ -119,6 +138,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

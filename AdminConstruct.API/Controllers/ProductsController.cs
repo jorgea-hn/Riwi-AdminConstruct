@@ -21,10 +21,18 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var list = await _context.Products.ToListAsync();
-        return Ok(_mapper.Map<List<ProductDto>>(list));
+        var query = _context.Products.AsQueryable();
+        var totalCount = await query.CountAsync();
+        
+        var list = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        var dtos = _mapper.Map<List<ProductDto>>(list);
+        return Ok(new PaginatedResult<ProductDto>(dtos, totalCount, page, pageSize));
     }
 
     [HttpGet("{id}")]

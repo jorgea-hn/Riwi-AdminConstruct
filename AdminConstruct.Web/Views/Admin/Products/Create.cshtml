@@ -6,7 +6,7 @@
 
 <h2>Nuevo Producto</h2>
 
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="mb-3">
         <label asp-for="Name" class="form-label"></label>
         <input asp-for="Name" class="form-control" />
@@ -30,6 +30,55 @@
         <textarea asp-for="Description" class="form-control"></textarea>
     </div>
 
+    <div class="mb-3">
+        <label for="ImageFile" class="form-label">Imagen del Producto</label>
+        <input type="file" name="ImageFile" id="ImageFile" class="form-control" accept="image/*" />
+        <small class="text-muted">Formatos permitidos: JPG, PNG, WEBP (Máx. 5MB)</small>
+    </div>
+
+    <div class="mb-3" id="imagePreviewContainer" style="display: none;">
+        <label class="form-label">Vista Previa</label>
+        <div>
+            <img id="imagePreview" src="#" alt="Vista previa" style="max-width: 300px; max-height: 300px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;" />
+        </div>
+    </div>
+
     <button type="submit" class="btn btn-success">Guardar</button>
     <a asp-action="Index" class="btn btn-secondary">Volver</a>
 </form>
+
+@section Scripts {
+    <script>
+        document.getElementById('ImageFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validar tamaño (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('La imagen no debe superar 5MB');
+                    this.value = '';
+                    document.getElementById('imagePreviewContainer').style.display = 'none';
+                    return;
+                }
+                
+                // Validar formato
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Formato no válido. Use JPG, PNG o WEBP');
+                    this.value = '';
+                    document.getElementById('imagePreviewContainer').style.display = 'none';
+                    return;
+                }
+                
+                // Mostrar vista previa
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreviewContainer').style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('imagePreviewContainer').style.display = 'none';
+            }
+        });
+    </script>
+}

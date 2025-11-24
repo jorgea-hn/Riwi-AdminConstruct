@@ -42,6 +42,7 @@
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
+                    <th>Imagen</th>
                     <th>Id</th>
                     <th>Nombre</th>
                     <th>Precio</th>
@@ -54,6 +55,16 @@
                 @foreach (var producto in Model)
                 {
                     <tr>
+                        <td>
+                            @if (!string.IsNullOrEmpty(producto.ImageUrl))
+                            {
+                                <img src="@producto.ImageUrl" alt="@producto.Name" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;" />
+                            }
+                            else
+                            {
+                                <span class="text-muted">Sin imagen</span>
+                            }
+                        </td>
                         <td>@producto.Id</td>
                         <td>@producto.Name</td>
                         <td>@producto.Price.ToString("C")</td>

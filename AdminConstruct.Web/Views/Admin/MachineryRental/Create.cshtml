@@ -1,0 +1,145 @@
+@model AdminConstruct.Web.Models.MachineryRental
+
+@{
+    ViewData["Title"] = "Nuevo Alquiler";
+}
+
+<h1>Nuevo Alquiler</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="MachineryId" class="control-label">Maquinaria</label>
+                                <select asp-for="MachineryId" class="form-control" asp-items="ViewBag.MachineryId">
+                                    <option value="">-- Seleccione Maquinaria --</option>
+                                </select>
+                                <span asp-validation-for="MachineryId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="CustomerId" class="control-label">Cliente</label>
+                                <select asp-for="CustomerId" class="form-control" asp-items="ViewBag.CustomerId">
+                                    <option value="">-- Seleccione Cliente --</option>
+                                </select>
+                                <span asp-validation-for="CustomerId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="StartDateTime" class="control-label"></label>
+                                <input asp-for="StartDateTime" class="form-control" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                                <span asp-validation-for="StartDateTime" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="EndDateTime" class="control-label"></label>
+                                <input asp-for="EndDateTime" class="form-control" type="datetime-local" value="@DateTime.Now.AddDays(1).ToString("yyyy-MM-ddTHH:mm")" />
+                                <span asp-validation-for="EndDateTime" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="PricePerDay" class="control-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="PricePerDay" class="form-control" readonly />
+                                </div>
+                                <span asp-validation-for="PricePerDay" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Total Estimado</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input id="TotalEstimated" class="form-control" readonly />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Notes" class="control-label"></label>
+                        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Crear Alquiler</button>
+                        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow bg-light">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">Información</h6>
+            </div>
+            <div class="card-body">
+                <p>Seleccione una maquinaria para ver su precio por día.</p>
+                <p>El sistema calculará automáticamente el total basado en las fechas seleccionadas.</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Se validará que la maquinaria esté disponible en el rango de fechas seleccionado.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function() {
+            function calculateTotal() {
+                var price = parseFloat($('#PricePerDay').val()) || 0;
+                var start = new Date($('#StartDateTime').val());
+                var end = new Date($('#EndDateTime').val());
+                
+                if (start && end && end > start) {
+                    var diffTime = Math.abs(end - start);
+                    var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    if (diffDays < 1) diffDays = 1;
+                    
+                    var total = price * diffDays;
+                    $('#TotalEstimated').val(total.toFixed(2));
+                } else {
+                    $('#TotalEstimated').val('');
+                }
+            }
+
+            $('#MachineryId').change(function() {
+                var machineryId = $(this).val();
+                if (machineryId) {
+                    $.get('/MachineryRental/GetMachineryPrice/' + machineryId, function(data) {
+                        $('#PricePerDay').val(data.price);
+                        calculateTotal();
+                    });
+                } else {
+                    $('#PricePerDay').val('');
+                    calculateTotal();
+                }
+            });
+
+            $('#StartDateTime, #EndDateTime').change(calculateTotal);
+        });
+    </script>
+}

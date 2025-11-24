@@ -1,0 +1,36 @@
+@model AdminConstruct.Web.Models.MachineryRental
+
+@{
+    ViewData["Title"] = "Registrar Devolución";
+}
+
+<h1>Registrar Devolución</h1>
+
+<h3>¿Está seguro que desea registrar la devolución de esta maquinaria?</h3>
+
+<div class="card shadow mb-4 mt-4">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Maquinaria</dt>
+            <dd class="col-sm-9">@Model.Machinery.Name</dd>
+            
+            <dt class="col-sm-3">Cliente</dt>
+            <dd class="col-sm-9">@Model.Customer.Name</dd>
+            
+            <dt class="col-sm-3">Fecha Inicio</dt>
+            <dd class="col-sm-9">@Model.StartDateTime.ToString("dd/MM/yyyy HH:mm")</dd>
+            
+            <dt class="col-sm-3">Fecha Fin Pactada</dt>
+            <dd class="col-sm-9">@Model.EndDateTime.ToString("dd/MM/yyyy HH:mm")</dd>
+        </dl>
+        
+        <form asp-action="Return">
+            <input type="hidden" asp-for="Id" />
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i> Esta acción marcará el alquiler como finalizado y liberará la maquinaria para nuevos alquileres.
+            </div>
+            <button type="submit" class="btn btn-warning">Confirmar Devolución</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

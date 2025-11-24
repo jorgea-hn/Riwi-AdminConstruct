@@ -7,15 +7,16 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace AdminConstruct.Web.Controllers;
 
-[Area("Admin")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Administrador")]
 public class ProductsController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public ProductsController(ApplicationDbContext context)
+    public ProductsController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
     {
         _context = context;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     // GET: /Admin/Products
@@ -28,7 +29,8 @@ public class ProductsController : Controller
             Name = p.Name,
             Price = p.Price,
             StockQuantity = p.StockQuantity,
-            Description = p.Description
+            Description = p.Description,
+            ImageUrl = p.ImageUrl
         }).ToList();
 
         return View(model);
@@ -43,10 +45,46 @@ public class ProductsController : Controller
     // POST: /Admin/Products/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(ProductViewModel model)
+    public async Task<IActionResult> Create(ProductViewModel model, IFormFile? ImageFile)
     {
         if (!ModelState.IsValid) 
             return View(model);
+
+        string? imageUrl = null;
+        
+        // Procesar imagen si se cargó
+        if (ImageFile != null && ImageFile.Length > 0)
+        {
+            // Validar tamaño (5MB max)
+            if (ImageFile.Length > 5 * 1024 * 1024)
+            {
+                ModelState.AddModelError("ImageFile", "La imagen no debe superar 5MB");
+                return View(model);
+            }
+            
+            // Validar formato
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var extension = Path.GetExtension(ImageFile.FileName).ToLower();
+            if (!allowedExtensions.Contains(extension))
+            {
+                ModelState.AddModelError("ImageFile", "Formato no válido. Use JPG, PNG o WEBP");
+                return View(model);
+            }
+            
+            // Guardar imagen
+            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "products");
+            Directory.CreateDirectory(uploadsFolder);
+            
+            var uniqueFileName = $"{Guid.NewGuid()}{extension}";
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await ImageFile.CopyToAsync(stream);
+            }
+            
+            imageUrl = $"/images/products/{uniqueFileName}";
+        }
 
         var product = new Product
         {
@@ -54,7 +92,8 @@ public class ProductsController : Controller
             Name = model.Name,
             Price = model.Price,
             StockQuantity = model.StockQuantity,
-            Description = model.Description
+            Description = model.Description,
+            ImageUrl = imageUrl
         };
 
         _context.Add(product);
@@ -75,7 +114,8 @@ public class ProductsController : Controller
             Name = product.Name,
             Price = product.Price,
             StockQuantity = product.StockQuantity,
-            Description = product.Description
+            Description = product.Description,
+            ImageUrl = product.ImageUrl
         };
 
         return View(model);
@@ -84,13 +124,57 @@ public class ProductsController : Controller
     // POST: /Admin/Products/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, ProductViewModel model)
+    public async Task<IActionResult> Edit(Guid id, ProductViewModel model, IFormFile? ImageFile)
     {
         if (id != model.Id) return NotFound();
         if (!ModelState.IsValid) return View(model);
 
         var product = await _context.Products.FindAsync(id);
         if (product == null) return NotFound();
+
+        // Procesar nueva imagen si se cargó
+        if (ImageFile != null && ImageFile.Length > 0)
+        {
+            // Validar tamaño (5MB max)
+            if (ImageFile.Length > 5 * 1024 * 1024)
+            {
+                ModelState.AddModelError("ImageFile", "La imagen no debe superar 5MB");
+                return View(model);
+            }
+            
+            // Validar formato
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var extension = Path.GetExtension(ImageFile.FileName).ToLower();
+            if (!allowedExtensions.Contains(extension))
+            {
+                ModelState.AddModelError("ImageFile", "Formato no válido. Use JPG, PNG o WEBP");
+                return View(model);
+            }
+            
+            // Eliminar imagen anterior si existe
+            if (!string.IsNullOrEmpty(product.ImageUrl))
+            {
+                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, product.ImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+            }
+            
+            // Guardar nueva imagen
+            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "products");
+            Directory.CreateDirectory(uploadsFolder);
+            
+            var uniqueFileName = $"{Guid.NewGuid()}{extension}";
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await ImageFile.CopyToAsync(stream);
+            }
+            
+            product.ImageUrl = $"/images/products/{uniqueFileName}";
+        }
 
         product.Name = model.Name;
         product.Price = model.Price;

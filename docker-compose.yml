@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  # Servicio de pruebas - DEBE ejecutarse primero
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.tests
+    container_name: adminconstruct-tests
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Database=AdminConstructDb;Username=postgres;Password=admin123
+    networks:
+      - adminconstruct-network
+
+  # Base de datos PostgreSQL
+  db:
+    image: postgres:16-alpine
+    container_name: adminconstruct-db
+    environment:
+      POSTGRES_DB: AdminConstructDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - adminconstruct-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API REST
+  api:
+    build:
+      context: .
+      dockerfile: AdminConstruct.API/Dockerfile
+    container_name: adminconstruct-api
+    depends_on:
+      tests:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=db;Database=AdminConstructDb;Username=postgres;Password=admin123
+      - Jwt__SecretKey=MiClaveSecretaSuperSeguraParaJWT2024AdminConstruct
+      - Jwt__Issuer=AdminConstruct
+      - Jwt__Audience=AdminConstructUsers
+      - SmtpSettings__Server=smtp.gmail.com
+      - SmtpSettings__Port=587
+      - SmtpSettings__Username=your-email@gmail.com
+      - SmtpSettings__Password=your-app-password
+    ports:
+      - "5228:8080"
+    networks:
+      - adminconstruct-network
+
+  # Panel de Administración (Web)
+  web:
+    build:
+      context: .
+      dockerfile: AdminConstruct.Web/Dockerfile
+    container_name: adminconstruct-web
+    depends_on:
+      tests:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=db;Database=AdminConstructDb;Username=postgres;Password=admin123
+    ports:
+      - "5005:8080"
+    networks:
+      - adminconstruct-network
+
+  # Cliente SPA (Frontend)
+  client:
+    build:
+      context: ./admin-construct-client
+      dockerfile: Dockerfile
+    container_name: adminconstruct-client
+    depends_on:
+      tests:
+        condition: service_completed_successfully
+      api:
+        condition: service_started
+    ports:
+      - "3000:80"
+    networks:
+      - adminconstruct-network
+
+networks:
+  adminconstruct-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

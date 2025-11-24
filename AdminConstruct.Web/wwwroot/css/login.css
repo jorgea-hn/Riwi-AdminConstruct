@@ -1,65 +1,84 @@
-/* Estilos para la página de Login */
-
 :root {
-    --primary-color: #007bff;
-    --light-color: #f8f9fa;
+    --color-principal: #0d1b2a;
+    --color-secundario: #1b263b;
+    --color-acento: #FF8C00;
+    --color-texto: #e0e1dd;
+    --color-blanco: #ffffff;
 }
 
 body {
+    background-color: var(--color-principal);
     font-family: 'Roboto', sans-serif;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
 }
 
 .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: linear-gradient(to right, #0052D4, #65C7F7, #9CECFB);
+    width: 100%;
+    max-width: 400px;
+    padding: 15px;
 }
 
 .login-card {
+    background-color: var(--color-blanco);
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    padding: 40px;
     width: 100%;
-    max-width: 400px;
-    padding: 2.5rem;
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
 }
 
 .login-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 30px;
+    color: var(--color-principal);
 }
 
 .login-header i {
     font-size: 3rem;
-    color: var(--primary-color);
+    color: var(--color-acento);
+    margin-bottom: 10px;
 }
 
 .login-header h2 {
     font-weight: 700;
-    color: #333;
+    font-size: 1.8rem;
 }
 
-.form-floating>label {
-    padding-left: 0.5rem;
-    color: #6c757d;
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--color-acento);
 }
 
-.form-floating>.form-control:focus~label,
-.form-floating>.form-control:not(:placeholder-shown)~label {
-    transform: scale(.85) translateY(-.5rem) translateX(.15rem);
+.form-control:focus {
+    border-color: var(--color-acento);
+    box-shadow: 0 0 0 0.25rem rgba(255, 140, 0, 0.25);
 }
 
 .btn-primary {
-    padding: 0.75rem 1.5rem;
+    background-color: var(--color-principal);
+    border-color: var(--color-principal);
     font-weight: 500;
-    border-radius: 50px;
     transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
+    background-color: var(--color-acento);
+    border-color: var(--color-acento);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+.form-check-input:checked {
+    background-color: var(--color-acento);
+    border-color: var(--color-acento);
+}
+
+.alert-danger {
+    background-color: #ffebee;
+    color: #c62828;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
 }

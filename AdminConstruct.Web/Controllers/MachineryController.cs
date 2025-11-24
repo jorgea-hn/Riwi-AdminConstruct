@@ -11,7 +11,7 @@ using QuestPDF.Infrastructure;
 
 namespace AdminConstruct.Web.Controllers;
 
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Administrador")]
 public class MachineryController : Controller
 {
     private readonly ApplicationDbContext _context;

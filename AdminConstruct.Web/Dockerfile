@@ -1,45 +1,29 @@
-﻿#FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-#USER $APP_UID
-#WORKDIR /app
-#EXPOSE 8080
-#EXPOSE 8081
-#
-#FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-#ARG BUILD_CONFIGURATION=Release
-#WORKDIR /src
-#COPY ["AdminConstruct.Ryzor/AdminConstruct.Ryzor.csproj", "AdminConstruct.Ryzor/"]
-#RUN dotnet restore "AdminConstruct.Ryzor/AdminConstruct.Ryzor.csproj"
-#COPY . .
-#WORKDIR "/src/AdminConstruct.Ryzor"
-#RUN dotnet build "./AdminConstruct.Ryzor.csproj" -c $BUILD_CONFIGURATION -o /app/build
-#
-#FROM build AS publish
-#ARG BUILD_CONFIGURATION=Release
-#RUN dotnet publish "./AdminConstruct.Ryzor.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-#
-#FROM base AS final
-#WORKDIR /app
-#COPY --from=publish /app/publish .
-#ENTRYPOINT ["dotnet", "AdminConstruct.Ryzor.dll"]
-# ============================
-# 1) BUILD
-# ============================
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+﻿# Dockerfile para AdminConstruct.Web (Admin Panel)
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-
-COPY . ./
-RUN dotnet restore
-RUN dotnet publish -c Release -o /publish
-
-# ============================
-# 2) RUNTIME
-# ============================
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
-WORKDIR /app
-
-COPY --from=build /publish .
-
 EXPOSE 8080
-ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8081
 
-ENTRYPOINT ["dotnet", "adminConstruct.dll"]
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+
+# Copiar archivos de proyecto
+COPY ["AdminConstruct.Web/AdminConstruct.Web.csproj", "AdminConstruct.Web/"]
+RUN dotnet restore "AdminConstruct.Web/AdminConstruct.Web.csproj"
+
+# Copiar todo el código
+COPY . .
+WORKDIR "/src/AdminConstruct.Web"
+RUN dotnet build "./AdminConstruct.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# Publicar
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./AdminConstruct.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+# Imagen final
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "AdminConstruct.Web.dll"]

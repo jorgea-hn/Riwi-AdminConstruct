@@ -1,0 +1,24 @@
+# Dockerfile para ejecutar pruebas automatizadas
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+WORKDIR /src
+
+# Copiar archivos de solución y proyectos
+COPY *.sln ./
+COPY AdminConstruct.API/*.csproj ./AdminConstruct.API/
+COPY AdminConstruct.Web/*.csproj ./AdminConstruct.Web/
+COPY AdminConstruct.Test/*.csproj ./AdminConstruct.Test/
+
+# Restaurar dependencias
+RUN dotnet restore
+
+# Copiar todo el código fuente
+COPY . .
+
+# Compilar la solución
+WORKDIR /src/AdminConstruct.Test
+RUN dotnet build -c Release --no-restore
+
+# Ejecutar las pruebas
+# Si alguna prueba falla, el contenedor terminará con código de salida != 0
+ENTRYPOINT ["dotnet", "test", "--no-build", "-c", "Release", "--logger:console;verbosity=detailed"]

@@ -14,11 +14,13 @@ namespace AdminConstruct.API.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly AdminConstruct.API.Services.IEmailService _emailService;
 
-        public AuthController(UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public AuthController(UserManager<IdentityUser> userManager, IConfiguration configuration, AdminConstruct.API.Services.IEmailService emailService)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         // --------------------- Register ---------------------
@@ -43,6 +45,17 @@ namespace AdminConstruct.API.Controllers
 
             // Asignar rol Cliente
             await _userManager.AddToRoleAsync(user, "Cliente");
+
+            // Enviar correo de bienvenida
+            try
+            {
+                await _emailService.SendEmailAsync(dto.Email, "Bienvenido a AdminConstruct", "<h1>¡Bienvenido!</h1><p>Gracias por registrarte en nuestra plataforma.</p>");
+            }
+            catch (Exception ex)
+            {
+                // Loguear error pero no fallar el registro
+                Console.WriteLine($"Error enviando correo: {ex.Message}");
+            }
 
             return Ok("Usuario registrado correctamente.");
         }

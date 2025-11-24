@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace AdminConstruct.Web.Controllers;
 
-[Area("Admin")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Administrador")]
 public class SalesController : Controller
 {
     private readonly ApplicationDbContext _context;

@@ -4,7 +4,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 
+using QuestPDF.Infrastructure;
+using OfficeOpenXml;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Habilitar comportamiento legado de timestamps para PostgreSQL
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+// Configurar licencias
+QuestPDF.Settings.License = LicenseType.Community;
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 
 // conection with postgres
@@ -23,7 +33,12 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 
 
 // Add services to the container.
+builder.Services.AddScoped<AdminConstruct.Web.Services.RentalValidationService>();
+
 builder.Services.AddControllersWithViews();
+
+// Configurar AutoMapper
+builder.Services.AddAutoMapper(typeof(Program));
 
 // *** AÑADIDO: INICIO DE LA CONFIGURACIÓN DE VISTAS ***
 // Esto le enseña al motor de vistas a buscar también en la carpeta /Views/Admin/
@@ -60,7 +75,9 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-    await SeedData.InitializeAsync(userManager, roleManager);
+    var context = services.GetRequiredService<ApplicationDbContext>();
+
+    await SeedData.InitializeAsync(userManager, roleManager, context);
 }
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
