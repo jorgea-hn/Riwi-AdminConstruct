@@ -1,12 +1,13 @@
 namespace AdminConstruct.API.DTOs
 {
-    // prueba
     // DTO para registrar un usuario
     public class RegisterDto
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public string? Name { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Document { get; set; } = string.Empty;
+        public string? Phone { get; set; }
     }
 
     // DTO para login

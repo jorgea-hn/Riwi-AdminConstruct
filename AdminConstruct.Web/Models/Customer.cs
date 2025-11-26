@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace AdminConstruct.Web.Models;
 
@@ -9,4 +10,8 @@ public class Customer
     public string Document { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string? Phone { get; set; }
+    
+    // Relación con IdentityUser
+    public string? UserId { get; set; }
+    public IdentityUser? User { get; set; }
 }

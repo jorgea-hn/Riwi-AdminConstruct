@@ -4,8 +4,11 @@ using AdminConstruct.Web.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace AdminConstruct.API.Controllers;
+
 [ApiController]
 [Route("api/[controller]")]
 public class CustomersController : ControllerBase
@@ -23,7 +26,9 @@ public class CustomersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var customers = await _context.Customers.ToListAsync();
+        var customers = await _context.Customers
+            .Include(c => c.User)
+            .ToListAsync();
         return Ok(_mapper.Map<List<CustomerDto>>(customers));
     }
 
@@ -31,22 +36,73 @@ public class CustomersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var customer = await _context.Customers.FindAsync(id);
+        var customer = await _context.Customers
+            .Include(c => c.User)
+            .FirstOrDefaultAsync(c => c.Id == id);
         if (customer == null) return NotFound();
 
         return Ok(_mapper.Map<CustomerDto>(customer));
     }
 
-    // POST: api/customers
-    [HttpPost]
-    public async Task<IActionResult> Create(CustomerDto dto)
+    // GET: api/customers/my-profile
+    [Authorize]
+    [HttpGet("my-profile")]
+    public async Task<IActionResult> GetMyProfile()
     {
-        var customer = _mapper.Map<Customer>(dto);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
 
-        _context.Customers.Add(customer);
+        var customer = await _context.Customers
+            .Include(c => c.User)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        if (customer == null)
+        {
+            // Si el usuario existe pero no tiene perfil de cliente, crearlo automáticamente
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return Unauthorized();
+
+            customer = new Customer
+            {
+                UserId = userId,
+                Email = user.Email!,
+                Name = user.UserName ?? "Usuario",
+                Document = "Pendiente", // Valor por defecto
+                Phone = ""
+            };
+
+            _context.Customers.Add(customer);
+            await _context.SaveChangesAsync();
+        }
+
+        var dto = _mapper.Map<CustomerDto>(customer);
+        return Ok(dto);
+    }
+
+    // PUT: api/customers/my-profile
+    [Authorize]
+    [HttpPut("my-profile")]
+    public async Task<IActionResult> UpdateMyProfile(CustomerDto dto)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var customer = await _context.Customers
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        if (customer == null)
+            return NotFound("No se encontró el perfil del cliente");
+
+        // Solo permitir actualizar ciertos campos
+        customer.Name = dto.Name;
+        customer.Document = dto.Document;
+        customer.Phone = dto.Phone;
+        // Email no se puede cambiar desde aquí
+
         await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetById), new { id = customer.Id }, _mapper.Map<CustomerDto>(customer));
+        return Ok(_mapper.Map<CustomerDto>(customer));
     }
 
     // PUT: api/customers/{id}
@@ -56,6 +112,9 @@ public class CustomersController : ControllerBase
         var customer = await _context.Customers.FindAsync(id);
         if (customer == null) return NotFound();
 
+        // No permitir cambiar el UserId
+        dto.UserId = customer.UserId;
+        
         _mapper.Map(dto, customer);
 
         await _context.SaveChangesAsync();

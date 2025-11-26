@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { productService, type MachineryDto } from '../services/productService.tsx';
+import { productService, type MachineryDto } from '../services/productService.ts';
 import { Calendar } from 'lucide-react';
 import { notifications } from '../utils/notifications.ts';
 
@@ -11,6 +11,7 @@ export default function Machinery() {
   const [selectedMachinery, setSelectedMachinery] = useState<MachineryDto | null>(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
 
   useEffect(() => {
     loadMachinery();
@@ -34,11 +35,13 @@ export default function Machinery() {
     setSelectedMachinery(item);
   };
 
-  const confirmRental = () => {
+  const confirmRental = async () => {
     if (!selectedMachinery || !startDate || !endDate) {
       notifications.warning('Por favor completa todos los campos');
       return;
     }
+
+
 
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
     cart.push({

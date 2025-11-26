@@ -6,6 +6,7 @@ import Home from './pages/Home.tsx';
 import Products from './pages/Products.tsx';
 import Machinery from './pages/Machinery.tsx';
 import Cart from './pages/Cart.tsx';
+import Profile from './pages/Profile.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import Navbar from './components/Navbar.tsx';
 import { authService } from './services/authService.ts';
@@ -41,6 +42,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Machinery />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />

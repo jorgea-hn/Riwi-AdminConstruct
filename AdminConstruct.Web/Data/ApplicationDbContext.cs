@@ -23,6 +23,16 @@ public class ApplicationDbContext : IdentityDbContext
     {
         base.OnModelCreating(modelBuilder);
         
+        // Configurar relación Customer-User
+        modelBuilder.Entity<Customer>()
+            .HasOne(c => c.User)
+            .WithMany()
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
+            
+        modelBuilder.Entity<Customer>()
+            .HasIndex(c => c.UserId);
+        
         // Configurar relaciones de MachineryRental
         modelBuilder.Entity<MachineryRental>()
             .HasOne(r => r.Machinery)

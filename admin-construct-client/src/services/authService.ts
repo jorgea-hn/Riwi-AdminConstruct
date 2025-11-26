@@ -9,6 +9,9 @@ export interface LoginDto {
 export interface RegisterDto {
     email: string;
     password: string;
+    name: string;
+    document: string;
+    phone?: string;
 }
 
 export interface AuthResponse {
@@ -31,8 +34,8 @@ export const authService = {
         return response.data;
     },
 
-    async register(data: RegisterDto): Promise<string> {
-        const response = await api.post<string>('/auth/register', data);
+    async register(data: RegisterDto): Promise<{ message: string, customerId: string }> {
+        const response = await api.post<{ message: string, customerId: string }>('/auth/register', data);
         return response.data;
     },
 

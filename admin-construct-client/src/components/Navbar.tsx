@@ -1,14 +1,22 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { ShoppingCart, LogOut, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 interface NavbarProps {
   cartItemCount?: number;
 }
 
 export default function Navbar({ cartItemCount = 0 }: NavbarProps) {
-  const isAuthenticated = authService.isAuthenticated();
-  const userEmail = authService.getUserEmail();
+  const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
+  const [userEmail, setUserEmail] = useState(authService.getUserEmail());
+  const location = useLocation();
+
+  // Actualizar estado de autenticación cuando cambia la ruta
+  useEffect(() => {
+    setIsAuthenticated(authService.isAuthenticated());
+    setUserEmail(authService.getUserEmail());
+  }, [location]);
 
   const handleLogout = () => {
     authService.logout();
@@ -30,6 +38,9 @@ export default function Navbar({ cartItemCount = 0 }: NavbarProps) {
                 </Link>
                 <Link to="/machinery" className="hover:text-secondary transition font-medium">
                   Maquinaria
+                </Link>
+                <Link to="/profile" className="hover:text-secondary transition font-medium">
+                  Mi Perfil
                 </Link>
                 <Link to="/cart" className="relative hover:text-secondary transition">
                   <ShoppingCart size={24} />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { productService, type ProductDto } from '../services/productService.tsx';
+import { productService, type ProductDto } from '../services/productService.ts';
 import { ShoppingCart } from 'lucide-react';
 import { notifications } from '../utils/notifications.ts';
 
@@ -8,6 +8,7 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
 
   useEffect(() => {
     loadProducts();
@@ -27,7 +28,9 @@ export default function Products() {
     }
   };
 
-  const addToCart = (product: ProductDto) => {
+  const addToCart = async (product: ProductDto) => {
+
+
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
     const existingItem = cart.find((item: any) => item.id === product.id && item.type === 'product');
     

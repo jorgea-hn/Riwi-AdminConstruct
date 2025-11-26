@@ -46,6 +46,21 @@ namespace AdminConstruct.API.Controllers
             // Asignar rol Cliente
             await _userManager.AddToRoleAsync(user, "Cliente");
 
+            // Crear Customer asociado
+            var customer = new AdminConstruct.Web.Models.Customer
+            {
+                Name = dto.Name,
+                Document = dto.Document,
+                Email = dto.Email,
+                Phone = dto.Phone,
+                UserId = user.Id
+            };
+
+            // Guardar customer en la base de datos
+            var context = HttpContext.RequestServices.GetRequiredService<AdminConstruct.Web.Data.ApplicationDbContext>();
+            context.Customers.Add(customer);
+            await context.SaveChangesAsync();
+
             // Enviar correo de bienvenida
             try
             {
@@ -57,7 +72,7 @@ namespace AdminConstruct.API.Controllers
                 Console.WriteLine($"Error enviando correo: {ex.Message}");
             }
 
-            return Ok("Usuario registrado correctamente.");
+            return Ok(new { message = "Usuario registrado correctamente.", customerId = customer.Id });
         }
 
         // --------------------- Login ---------------------
