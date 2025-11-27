@@ -1,43 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { notifications } from '../utils/notifications.ts';
-
-interface CartItem {
-  id: string | number;
-  name: string;
-  price: number;
-  quantity: number;
-  type: 'product' | 'rental';
-  startDate?: string;
-  endDate?: string;
-}
+import api from '../services/api';
+import { useCart } from '../context/CartContext';
 
 export default function Cart() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    loadCart();
-  }, []);
-
-  const loadCart = () => {
-    const savedCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    setCartItems(savedCart);
-  };
-
-  const removeItem = (index: number) => {
-    const newCart = cartItems.filter((_, i) => i !== index);
-    setCartItems(newCart);
-    localStorage.setItem('cart', JSON.stringify(newCart));
-  };
-
-  const updateQuantity = (index: number, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    const newCart = [...cartItems];
-    newCart[index].quantity = newQuantity;
-    setCartItems(newCart);
-    localStorage.setItem('cart', JSON.stringify(newCart));
-  };
 
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
@@ -57,16 +26,89 @@ export default function Cart() {
 
     setLoading(true);
     try {
-      // Aquí puedes implementar la lógica de checkout
-      // Por ahora solo limpiamos el carrito
-      notifications.success('Compra realizada con éxito. Recibirás un correo de confirmación.');
-      localStorage.removeItem('cart');
-      setCartItems([]);
-    } catch (error) {
-      console.error('Error:', error);
-      notifications.error('Error al procesar la compra');
+      // 1. Obtener perfil del cliente
+      const customerResponse = await api.get('/customers/my-profile');
+      const customerId = customerResponse.data.id;
+
+      // 2. Separar productos y alquileres
+      const products = cartItems.filter(item => item.type === 'product');
+      const rentals = cartItems.filter(item => item.type === 'rental');
+
+      // 3. Procesar venta de productos
+      if (products.length > 0) {
+        const productTotal = products.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const totalWithTax = productTotal * 1.19; // IVA 19%
+
+        const salePayload = {
+          customerId: customerId,
+          totalAmount: totalWithTax,
+          details: products.map(item => ({
+            productId: item.id,
+            quantity: item.quantity,
+            unitPrice: item.price
+          }))
+        };
+
+        console.log('[Cart] Creating sale:', salePayload);
+        await api.post('/sales', salePayload);
+      }
+
+      // 4. Procesar alquileres
+      if (rentals.length > 0) {
+        for (const rental of rentals) {
+          if (!rental.startDate || !rental.endDate) continue;
+          
+          // Convertir fechas a formato ISO con hora
+          const startDate = new Date(rental.startDate);
+          startDate.setHours(8, 0, 0, 0); // 8:00 AM
+          
+          const endDate = new Date(rental.endDate);
+          endDate.setHours(18, 0, 0, 0); // 6:00 PM
+          
+          const rentalPayload = {
+            machineryId: rental.id,
+            customerId: customerId,
+            startDateTime: startDate.toISOString(),
+            endDateTime: endDate.toISOString(),
+            notes: 'Alquiler desde carrito web'
+          };
+
+          console.log('[Cart] Creating rental:', rentalPayload);
+          await api.post('/machineryrental', rentalPayload);
+        }
+      }
+
+      const message = products.length > 0 && rentals.length > 0
+        ? 'Compra y alquiler realizados con éxito'
+        : products.length > 0
+        ? 'Compra realizada con éxito'
+        : 'Alquiler realizado con éxito';
+
+      notifications.success(`${message}. Recibirás un correo de confirmación.`);
+      clearCart();
+    } catch (error: any) {
+      console.error('Error detailed:', error);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+      }
+      notifications.error(`Error al procesar: ${error.response?.data?.message || error.message || 'Error desconocido'}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Determinar el texto del botón según el contenido del carrito
+  const getCheckoutButtonText = () => {
+    const hasProducts = cartItems.some(item => item.type === 'product');
+    const hasRentals = cartItems.some(item => item.type === 'rental');
+    
+    if (hasProducts && hasRentals) {
+      return loading ? 'Procesando...' : 'Finalizar Compra y Alquiler';
+    } else if (hasRentals) {
+      return loading ? 'Procesando...' : 'Finalizar Alquiler';
+    } else {
+      return loading ? 'Procesando...' : 'Finalizar Compra';
     }
   };
 
@@ -118,7 +160,7 @@ export default function Cart() {
                       </div>
                     )}
                     <button
-                      onClick={() => removeItem(index)}
+                      onClick={() => removeFromCart(index)}
                       className="text-red-500 hover:text-red-700"
                     >
                       <Trash2 size={20} />
@@ -151,7 +193,7 @@ export default function Cart() {
                 disabled={loading}
                 className="w-full bg-secondary text-white py-3 rounded-lg hover:bg-orange-600 transition disabled:opacity-50"
               >
-                {loading ? 'Procesando...' : 'Finalizar Compra'}
+                {getCheckoutButtonText()}
               </button>
             </div>
           </div>

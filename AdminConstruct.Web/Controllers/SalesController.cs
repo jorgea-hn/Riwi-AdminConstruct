@@ -16,7 +16,7 @@ public class SalesController : Controller
         QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
     }
 
-    // GET: /Admin/Sales
+    // GET: /Sales
     public async Task<IActionResult> Index()
     {
         var sales = await _context.Sales
@@ -39,10 +39,10 @@ public class SalesController : Controller
             })
             .ToListAsync();
 
-        return View(sales);
+        return View("~/Views/Admin/Sales/Index.cshtml", sales);
     }
 
-    // GET: /Admin/Sales/Details/5
+    // GET: /Sales/Details/5
     public async Task<IActionResult> Details(Guid id)
     {
         var sale = await _context.Sales
@@ -53,6 +53,6 @@ public class SalesController : Controller
 
         if (sale == null) return NotFound();
 
-        return View(sale);
+        return View("~/Views/Admin/Sales/Details.cshtml", sale);
     }
 }

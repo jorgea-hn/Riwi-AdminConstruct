@@ -24,5 +24,7 @@ namespace AdminConstruct.Web.Models
         public decimal Price { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        public string? ImageUrl { get; set; }
     }
 }

@@ -1,0 +1,96 @@
+@model AdminConstruct.Web.Models.Sale
+
+@{
+    ViewBag.Title = "Detalles de la Venta";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Detalles de la Venta</h2>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Venta #<span class="d-none d-md-inline">@Model.Id</span><span class="d-md-none">@Model.Id.ToString().Substring(0, 8)</span></h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                    <h5 class="border-bottom pb-2">Información del Cliente</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <p class="mb-2"><strong>Nombre:</strong> @Model.Customer.Name</p>
+                            <p class="mb-2"><strong>Email:</strong> <a href="mailto:@Model.Customer.Email">@Model.Customer.Email</a></p>
+                            <p class="mb-2"><strong>Documento:</strong> @Model.Customer.Document</p>
+                            @if (!string.IsNullOrEmpty(Model.Customer.Phone))
+                            {
+                                <p class="mb-2"><strong>Teléfono:</strong> <a href="tel:@Model.Customer.Phone">@Model.Customer.Phone</a></p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <h5 class="border-bottom pb-2">Información de la Venta</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <p class="mb-2"><strong>Fecha:</strong> @Model.Date.ToString("dd/MM/yyyy HH:mm")</p>
+                            <p class="mb-2"><strong>Total:</strong> <span class="text-success fs-5">@Model.TotalAmount.ToString("C")</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="border-bottom pb-2 mb-3">Productos</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center d-none d-sm-table-cell">Cantidad</th>
+                                    <th class="text-center d-none d-md-table-cell">Precio Unit.</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var detail in Model.Details)
+                                {
+                                    var subtotal = detail.Quantity * detail.UnitPrice;
+                                    <tr>
+                                        <td>
+                                            <strong>@detail.Product.Name</strong>
+                                            <div class="d-sm-none">
+                                                <small class="text-muted">Cant.: @detail.Quantity × @detail.UnitPrice.ToString("C")</small>
+                                            </div>
+                                        </td>
+                                        <td class="text-center d-none d-sm-table-cell">@detail.Quantity</td>
+                                        <td class="text-center d-none d-md-table-cell">@detail.UnitPrice.ToString("C")</td>
+                                        <td class="text-end"><strong>@subtotal.ToString("C")</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-success">
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td class="text-end"><strong class="fs-5">@Model.TotalAmount.ToString("C")</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <a asp-action="Index" class="btn btn-secondary w-100 w-md-auto">
+                        <i class="fas fa-arrow-left"></i> Volver al Listado
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -117,7 +117,12 @@ var app = builder.Build();
 // -----------------------------
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var services = scope.ServiceProvider;
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var context = services.GetRequiredService<ApplicationDbContext>();
+
+    // Inicializar Datos Semilla
+    AdminConstruct.API.Data.DbInitializer.Initialize(context);
 
     string[] roles = { "Admin", "Cliente" };
 

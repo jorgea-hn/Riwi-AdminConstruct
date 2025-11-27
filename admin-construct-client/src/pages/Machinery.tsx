@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { productService, type MachineryDto } from '../services/productService.ts';
 import { Calendar } from 'lucide-react';
 import { notifications } from '../utils/notifications.ts';
+import { useCart } from '../context/CartContext';
 
 export default function Machinery() {
   const [machinery, setMachinery] = useState<MachineryDto[]>([]);
@@ -11,6 +12,7 @@ export default function Machinery() {
   const [selectedMachinery, setSelectedMachinery] = useState<MachineryDto | null>(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const { addToCart } = useCart();
 
 
   useEffect(() => {
@@ -41,18 +43,16 @@ export default function Machinery() {
       return;
     }
 
-
-
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    cart.push({
-      ...selectedMachinery,
+    addToCart({
+      id: selectedMachinery.id,
+      name: selectedMachinery.name,
+      price: selectedMachinery.price,
       type: 'rental',
       startDate,
       endDate,
       quantity: 1
     });
     
-    localStorage.setItem('cart', JSON.stringify(cart));
     notifications.success('Alquiler agregado al carrito');
     setSelectedMachinery(null);
     setStartDate('');

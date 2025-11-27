@@ -6,6 +6,7 @@ export interface ProductDto {
     price: number;
     stockQuantity: number;
     description?: string;
+    imageUrl?: string;
 }
 
 export interface MachineryDto {
@@ -15,6 +16,7 @@ export interface MachineryDto {
     stock: number;
     price: number;
     isActive: boolean;
+    imageUrl?: string;
 }
 
 export interface PaginatedResult<T> {

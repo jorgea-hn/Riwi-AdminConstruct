@@ -1,8 +1,10 @@
 using AdminConstruct.Web.Controllers;
 using AdminConstruct.Web.Data;
 using AdminConstruct.Web.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit;
 
 namespace AdminConstruct.Test.Web
@@ -29,7 +31,8 @@ namespace AdminConstruct.Test.Web
             );
             await context.SaveChangesAsync();
 
-            var controller = new MachineryController(context);
+            var mockMapper = new Mock<IMapper>();
+            var controller = new MachineryController(context, mockMapper.Object);
 
             // Act
             var result = await controller.Index();
@@ -45,7 +48,8 @@ namespace AdminConstruct.Test.Web
         {
             // Arrange
             using var context = GetInMemoryDbContext();
-            var controller = new MachineryController(context);
+            var mockMapper = new Mock<IMapper>();
+            var controller = new MachineryController(context, mockMapper.Object);
             var newMachinery = new Machinery
             {
                 Name = "Grúa",
@@ -80,7 +84,8 @@ namespace AdminConstruct.Test.Web
             context.Machineries.Add(machinery);
             await context.SaveChangesAsync();
 
-            var controller = new MachineryController(context);
+            var mockMapper = new Mock<IMapper>();
+            var controller = new MachineryController(context, mockMapper.Object);
             var updatedMachinery = new Machinery
             {
                 Id = 1,
@@ -118,7 +123,8 @@ namespace AdminConstruct.Test.Web
             context.Machineries.Add(machinery);
             await context.SaveChangesAsync();
 
-            var controller = new MachineryController(context);
+            var mockMapper = new Mock<IMapper>();
+            var controller = new MachineryController(context, mockMapper.Object);
 
             // Act
             var result = await controller.DeleteConfirmed(1);

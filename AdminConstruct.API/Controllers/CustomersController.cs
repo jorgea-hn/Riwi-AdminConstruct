@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace AdminConstruct.API.Controllers;
 
@@ -49,9 +50,30 @@ public class CustomersController : ControllerBase
     [HttpGet("my-profile")]
     public async Task<IActionResult> GetMyProfile()
     {
+        // DEBUG LOGS
+        Console.WriteLine($"[GetMyProfile] Request reached controller");
+        foreach (var claim in User.Claims)
+        {
+            Console.WriteLine($"Claim: {claim.Type} - {claim.Value}");
+        }
+
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        // Fallback: try finding "sub" or "id" if NameIdentifier is missing
         if (string.IsNullOrEmpty(userId))
+        {
+             userId = User.FindFirst("sub")?.Value 
+                      ?? User.FindFirst("id")?.Value
+                      ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        }
+
+        if (string.IsNullOrEmpty(userId)) 
+        {
+            Console.WriteLine("[GetMyProfile] UserId not found in claims.");
             return Unauthorized();
+        }
+
+        Console.WriteLine($"[GetMyProfile] Found UserId: {userId}");
 
         var customer = await _context.Customers
             .Include(c => c.User)

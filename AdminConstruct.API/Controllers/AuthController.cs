@@ -97,9 +97,11 @@ namespace AdminConstruct.API.Controllers
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),  // IMPORTANTE: usar user.Id en lugar de email
+                new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Email, user.Email ?? "")
             };
 
             // Agregar roles
@@ -111,7 +113,7 @@ namespace AdminConstruct.API.Controllers
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var expiration = DateTime.UtcNow.AddHours(2);
+            var expiration = DateTime.UtcNow.AddHours(24); // Extendido a 24 horas
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
@@ -120,6 +122,10 @@ namespace AdminConstruct.API.Controllers
                 expires: expiration,
                 signingCredentials: creds
             );
+
+            Console.WriteLine($"[AuthController] Token generated for user: {user.Email}");
+            Console.WriteLine($"[AuthController] User ID: {user.Id}");
+            Console.WriteLine($"[AuthController] Expiration: {expiration}");
 
             return new AuthResponseDto
             {

@@ -4,44 +4,68 @@
     ViewBag.Title = "Listado de Ventas";
 }
 
-<h2>Listado de Ventas</h2>
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-12">
+            <h2 class="mb-3">Listado de Ventas</h2>
+        </div>
+    </div>
 
-<p>
-    <a asp-controller="Export" asp-action="ExportSalesToPDF" class="btn btn-primary">
-        Exportar a PDF
-    </a>
-    <a asp-controller="Export" asp-action="ExportSalesToExcel" class="btn btn-success">
-        Exportar a Excel
-    </a>
+    <div class="row mb-3">
+        <div class="col-12 col-md-auto mb-2 mb-md-0">
+            <a asp-controller="Export" asp-action="ExportSalesToPDF" class="btn btn-primary w-100 w-md-auto">
+                <i class="fas fa-file-pdf"></i> Exportar a PDF
+            </a>
+        </div>
+        <div class="col-12 col-md-auto">
+            <a asp-controller="Export" asp-action="ExportSalesToExcel" class="btn btn-success w-100 w-md-auto">
+                <i class="fas fa-file-excel"></i> Exportar a Excel
+            </a>
+        </div>
+    </div>
 
-</p>
+    <div class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="d-none d-md-table-cell">ID</th>
+                            <th>Cliente</th>
+                            <th class="d-none d-lg-table-cell">Fecha</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var sale in Model)
+                        {
+                            var subtotal = sale.Details.Sum(d => d.Quantity * d.UnitPrice);
+                            var iva = subtotal * 0.12m;
+                            var total = subtotal + iva;
 
-<table class="table table-bordered table-striped">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Cliente</th>
-        <th>Fecha</th>
-        <th>Total</th>
-        <th>Acciones</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var sale in Model)
-    {
-        var subtotal = sale.Details.Sum(d => d.Quantity * d.UnitPrice);
-        var iva = subtotal * 0.12m;
-        var total = subtotal + iva;
-
-        <tr>
-            <td>@sale.Id</td>
-            <td>@sale.CustomerName</td>
-            <td>@sale.Date.ToString("dd/MM/yyyy HH:mm")</td>
-            <td>@total.ToString("C")</td>
-            <td>
-                <a class="btn btn-info btn-sm" href="@Url.Action("Details", "Sales", new { id = sale.Id })">Detalles</a>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+                            <tr>
+                                <td class="d-none d-md-table-cell">
+                                    <small>@sale.Id.ToString().Substring(0, 8)</small>
+                                </td>
+                                <td>
+                                    <strong class="d-lg-none">@sale.CustomerName</strong>
+                                    <span class="d-none d-lg-inline">@sale.CustomerName</span>
+                                    <br class="d-lg-none">
+                                    <small class="text-muted d-lg-none">@sale.Date.ToString("dd/MM/yyyy")</small>
+                                </td>
+                                <td class="d-none d-lg-table-cell">@sale.Date.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td><strong>@total.ToString("C")</strong></td>
+                                <td>
+                                    <a class="btn btn-info btn-sm w-100 w-md-auto" href="@Url.Action("Details", "Sales", new { area = "Admin", id = sale.Id })">
+                                        <i class="fas fa-info-circle"></i> <span class="d-none d-sm-inline">Detalles</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
