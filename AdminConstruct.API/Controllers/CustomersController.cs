@@ -5,26 +5,30 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace AdminConstruct.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CustomersController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public CustomersController(ApplicationDbContext context, IMapper mapper)
+    public CustomersController(ApplicationDbContext context, IMapper mapper, UserManager<IdentityUser> userManager)
     {
         _context = context;
         _mapper = mapper;
+        _userManager = userManager;
     }
 
     // GET: api/customers
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAll()
     {
         var customers = await _context.Customers
@@ -35,124 +39,66 @@ public class CustomersController : ControllerBase
 
     // GET: api/customers/{id}
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var customer = await _context.Customers
             .Include(c => c.User)
             .FirstOrDefaultAsync(c => c.Id == id);
+
         if (customer == null) return NotFound();
 
         return Ok(_mapper.Map<CustomerDto>(customer));
     }
 
     // GET: api/customers/my-profile
-    [Authorize]
     [HttpGet("my-profile")]
     public async Task<IActionResult> GetMyProfile()
     {
-        // DEBUG LOGS
-        Console.WriteLine($"[GetMyProfile] Request reached controller");
-        foreach (var claim in User.Claims)
-        {
-            Console.WriteLine($"Claim: {claim.Type} - {claim.Value}");
-        }
-
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
-        // Fallback: try finding "sub" or "id" if NameIdentifier is missing
-        if (string.IsNullOrEmpty(userId))
-        {
-             userId = User.FindFirst("sub")?.Value 
-                      ?? User.FindFirst("id")?.Value
-                      ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-        }
-
-        if (string.IsNullOrEmpty(userId)) 
-        {
-            Console.WriteLine("[GetMyProfile] UserId not found in claims.");
-            return Unauthorized();
-        }
-
-        Console.WriteLine($"[GetMyProfile] Found UserId: {userId}");
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Unauthorized();
 
         var customer = await _context.Customers
             .Include(c => c.User)
-            .FirstOrDefaultAsync(c => c.UserId == userId);
+            .FirstOrDefaultAsync(c => c.Email == user.Email);
 
         if (customer == null)
         {
-            // Si el usuario existe pero no tiene perfil de cliente, crearlo automáticamente
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null) return Unauthorized();
-
+            // Create default profile if not exists
             customer = new Customer
             {
-                UserId = userId,
+                Id = Guid.NewGuid(),
+                Name = user.UserName ?? "User",
                 Email = user.Email!,
-                Name = user.UserName ?? "Usuario",
-                Document = "Pendiente", // Valor por defecto
-                Phone = ""
+                Document = "Pending", // Default value
+                UserId = user.Id
             };
-
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
         }
 
-        var dto = _mapper.Map<CustomerDto>(customer);
-        return Ok(dto);
-    }
-
-    // PUT: api/customers/my-profile
-    [Authorize]
-    [HttpPut("my-profile")]
-    public async Task<IActionResult> UpdateMyProfile(CustomerDto dto)
-    {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized();
-
-        var customer = await _context.Customers
-            .FirstOrDefaultAsync(c => c.UserId == userId);
-
-        if (customer == null)
-            return NotFound("No se encontró el perfil del cliente");
-
-        // Solo permitir actualizar ciertos campos
-        customer.Name = dto.Name;
-        customer.Document = dto.Document;
-        customer.Phone = dto.Phone;
-        // Email no se puede cambiar desde aquí
-
-        await _context.SaveChangesAsync();
         return Ok(_mapper.Map<CustomerDto>(customer));
     }
 
-    // PUT: api/customers/{id}
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, CustomerDto dto)
+    // PUT: api/customers/my-profile
+    [HttpPut("my-profile")]
+    public async Task<IActionResult> UpdateMyProfile(CustomerDto dto)
     {
-        var customer = await _context.Customers.FindAsync(id);
-        if (customer == null) return NotFound();
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Unauthorized();
 
-        // No permitir cambiar el UserId
-        dto.UserId = customer.UserId;
-        
-        _mapper.Map(dto, customer);
+        var customer = await _context.Customers
+            .FirstOrDefaultAsync(c => c.Email == user.Email);
 
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+        if (customer == null) return NotFound("Customer profile not found");
 
-    // DELETE: api/customers/{id}
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        var customer = await _context.Customers.FindAsync(id);
-        if (customer == null) return NotFound();
+        customer.Name = dto.Name;
+        customer.Document = dto.Document;
+        customer.Phone = dto.Phone;
 
-        _context.Customers.Remove(customer);
+        _context.Entry(customer).State = EntityState.Modified;
         await _context.SaveChangesAsync();
 
-        return NoContent();
+        return Ok(_mapper.Map<CustomerDto>(customer));
     }
 }

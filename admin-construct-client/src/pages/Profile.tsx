@@ -84,11 +84,11 @@ export default function Profile() {
     } catch (error: any) {
       console.error('Error loading profile:', error);
       if (error.response?.status === 404) {
-        notifications.error('No se encontró tu perfil. Por favor contacta al administrador.');
+        notifications.error('Your profile was not found. Please contact the administrator.');
       } else if (error.response?.status === 401) {
-        notifications.error('Sesión expirada. Por favor inicia sesión nuevamente.');
+        notifications.error('Session expired. Please login again.');
       } else {
-        notifications.error('Error al cargar el perfil');
+        notifications.error('Error loading profile');
       }
     } finally {
       setLoading(false);
@@ -110,14 +110,14 @@ export default function Profile() {
         ...formData,
         email: profile?.email
       });
-      notifications.success('Perfil actualizado correctamente');
+      notifications.success('Profile updated successfully');
       // Update local profile state
       if (profile) {
         setProfile({ ...profile, ...formData });
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      notifications.error('Error al actualizar el perfil');
+      notifications.error('Error updating profile');
     } finally {
       setSaving(false);
     }
@@ -140,7 +140,7 @@ export default function Profile() {
             <div className="flex items-center">
               <User className="mr-3" size={32} />
               <div>
-                <h1 className="text-2xl font-bold">{profile?.name || 'Mi Perfil'}</h1>
+                <h1 className="text-2xl font-bold">{profile?.name || 'My Profile'}</h1>
                 <p className="text-blue-100">{profile?.email}</p>
               </div>
             </div>
@@ -157,7 +157,7 @@ export default function Profile() {
             >
               <div className="flex items-center justify-center space-x-2">
                 <User size={20} />
-                <span>Información Personal</span>
+                <span>Personal Information</span>
               </div>
             </button>
             <button
@@ -169,7 +169,7 @@ export default function Profile() {
             >
               <div className="flex items-center justify-center space-x-2">
                 <ShoppingBag size={20} />
-                <span>Mis Compras</span>
+                <span>My Purchases</span>
               </div>
             </button>
             <button
@@ -181,7 +181,7 @@ export default function Profile() {
             >
               <div className="flex items-center justify-center space-x-2">
                 <Clock size={20} />
-                <span>Mis Alquileres</span>
+                <span>My Rentals</span>
               </div>
             </button>
           </div>
@@ -192,7 +192,7 @@ export default function Profile() {
               <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nombre Completo
+                    Full Name
                   </label>
                   <input
                     type="text"
@@ -200,13 +200,13 @@ export default function Profile() {
                     value={formData.name}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Juan Pérez"
+                    placeholder="John Doe"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Número de Documento
+                    Document ID
                   </label>
                   <input
                     type="text"
@@ -220,7 +220,7 @@ export default function Profile() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Correo Electrónico
+                    Email
                   </label>
                   <input
                     type="email"
@@ -232,7 +232,7 @@ export default function Profile() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Teléfono
+                    Phone
                   </label>
                   <input
                     type="tel"
@@ -251,7 +251,7 @@ export default function Profile() {
                     className="flex-1 bg-secondary text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                   >
                     <Save size={20} />
-                    <span>{saving ? 'Guardando...' : 'Guardar Cambios'}</span>
+                    <span>{saving ? 'Saving...' : 'Save Changes'}</span>
                   </button>
                 </div>
               </form>
@@ -261,22 +261,22 @@ export default function Profile() {
               <div className="space-y-4">
                 {purchases.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
-                    No has realizado compras aún.
+                    You haven't made any purchases yet.
                   </div>
                 ) : (
                   purchases.map((purchase) => (
                     <div key={purchase.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
                       <div className="flex justify-between items-start mb-4">
                         <div>
-                          <p className="text-sm text-gray-500">Fecha: {new Date(purchase.date).toLocaleDateString()}</p>
+                          <p className="text-sm text-gray-500">Date: {new Date(purchase.date).toLocaleDateString()}</p>
                           <p className="font-bold text-lg text-primary">Total: ${purchase.totalAmount.toFixed(2)}</p>
                         </div>
                         <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                          Completado
+                          Completed
                         </span>
                       </div>
                       <div className="border-t border-gray-100 pt-3">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">Detalles:</h4>
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Details:</h4>
                         <ul className="space-y-1">
                           {purchase.details.map((detail, idx) => (
                             <li key={idx} className="text-sm text-gray-600 flex justify-between">
@@ -296,7 +296,7 @@ export default function Profile() {
               <div className="space-y-4">
                 {rentals.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
-                    No tienes alquileres registrados.
+                    You have no registered rentals.
                   </div>
                 ) : (
                   rentals.map((rental) => (
@@ -312,11 +312,11 @@ export default function Profile() {
                           </div>
                         </div>
                         <span className={`px-2 py-1 rounded text-xs ${rental.isActive ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
-                          {rental.isActive ? 'Activo' : 'Finalizado'}
+                          {rental.isActive ? 'Active' : 'Finished'}
                         </span>
                       </div>
                       <div className="flex justify-between items-center border-t border-gray-100 pt-3">
-                        <span className="text-sm text-gray-600">Total pagado</span>
+                        <span className="text-sm text-gray-600">Total paid</span>
                         <span className="font-bold text-primary">${rental.totalAmount.toFixed(2)}</span>
                       </div>
                     </div>

@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 // -----------------------------
-// BASE DE DATOS
+// DATABASE
 // -----------------------------
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -25,7 +25,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 // -----------------------------
 // JWT
 // -----------------------------
-var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new Exception("Falta Jwt:Key en appsettings.json");
+var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new Exception("Missing Jwt:Key in appsettings.json");
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 
@@ -59,7 +59,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<AdminConstruct.API.Services.IEmailService, AdminConstruct.API.Services.EmailService>();
 
 // -----------------------------
-// CONTROLADORES
+// CONTROLLERS
 // -----------------------------
 builder.Services.AddControllers();
 
@@ -84,7 +84,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "AdminConstruct API", Version = "v1" });
 
-    // JWT en Swagger
+    // JWT in Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -92,7 +92,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Introduce el token JWT aquí"
+        Description = "Enter JWT token here"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -113,7 +113,7 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // -----------------------------
-// CREAR ROLES POR DEFECTO (Admin, Cliente)
+// CREATE DEFAULT ROLES (Admin, Client)
 // -----------------------------
 using (var scope = app.Services.CreateScope())
 {
@@ -121,10 +121,10 @@ using (var scope = app.Services.CreateScope())
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     var context = services.GetRequiredService<ApplicationDbContext>();
 
-    // Inicializar Datos Semilla
+    // Initialize Seed Data
     AdminConstruct.API.Data.DbInitializer.Initialize(context);
 
-    string[] roles = { "Admin", "Cliente" };
+    string[] roles = { "Admin", "Cliente" }; // Keeping role names as they might be used in logic, but comments are translated.
 
     foreach (var role in roles)
     {
@@ -136,7 +136,7 @@ using (var scope = app.Services.CreateScope())
 // -----------------------------
 // MIDDLEWARE
 // -----------------------------
-// Swagger habilitado en todos los entornos (Development y Production)
+// Swagger enabled in all environments (Development and Production)
 app.UseSwagger();
 app.UseSwaggerUI();
 

@@ -42,7 +42,7 @@ export default function Products() {
       setTotalPages(Math.ceil(data.totalCount / data.pageSize));
     } catch (error) {
       console.error('Error loading products:', error);
-      notifications.error('Error al cargar los productos');
+      notifications.error('Error loading products');
     } finally {
       setLoading(false);
     }
@@ -56,13 +56,13 @@ export default function Products() {
       quantity: 1,
       type: 'product'
     });
-    notifications.success('Producto agregado al carrito');
+    notifications.success('Product added to cart');
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-        <h1 className="text-3xl font-bold text-primary">Catálogo de Productos</h1>
+        <h1 className="text-3xl font-bold text-primary">Product Catalog</h1>
 
         {/* Search Bar */}
         <div className="relative w-full md:w-96">
@@ -71,7 +71,7 @@ export default function Products() {
           </div>
           <input
             type="text"
-            placeholder="Buscar productos..."
+            placeholder="Search products..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition shadow-sm"
@@ -88,7 +88,7 @@ export default function Products() {
           {filteredProducts.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 rounded-lg">
               <Filter size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 text-lg">No se encontraron productos que coincidan con tu búsqueda.</p>
+              <p className="text-gray-500 text-lg">No products found matching your search.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -109,7 +109,7 @@ export default function Products() {
                     )}
                     {product.stockQuantity === 0 && (
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <span className="bg-red-600 text-white px-3 py-1 rounded-full font-bold transform -rotate-12">AGOTADO</span>
+                        <span className="bg-red-600 text-white px-3 py-1 rounded-full font-bold transform -rotate-12">OUT OF STOCK</span>
                       </div>
                     )}
                   </div>
@@ -125,7 +125,7 @@ export default function Products() {
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-sm text-gray-500">Stock: {product.stockQuantity}</span>
                         <span className={`px-2 py-1 rounded text-xs font-medium ${product.stockQuantity > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                          {product.stockQuantity > 0 ? 'Disponible' : 'Agotado'}
+                          {product.stockQuantity > 0 ? 'Available' : 'Out of Stock'}
                         </span>
                       </div>
                       <p className="text-2xl font-bold text-primary mb-4">
@@ -137,7 +137,7 @@ export default function Products() {
                         className="w-full bg-secondary text-white py-2 rounded-lg hover:bg-secondary-dark transition flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium active:scale-95 transform duration-100"
                       >
                         <ShoppingCart size={20} />
-                        <span>Agregar al Carrito</span>
+                        <span>Add to Cart</span>
                       </button>
                     </div>
                   </div>
@@ -154,17 +154,17 @@ export default function Products() {
                 disabled={page === 1}
                 className="px-4 py-2 bg-primary text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-900 transition"
               >
-                Anterior
+                Previous
               </button>
               <span className="text-gray-700">
-                Página {page} de {totalPages}
+                Page {page} of {totalPages}
               </span>
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
                 className="px-4 py-2 bg-primary text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-900 transition"
               >
-                Siguiente
+                Next
               </button>
             </div>
           )}

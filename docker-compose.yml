@@ -10,7 +10,7 @@ services:
     depends_on:
       - db
     environment:
-      - ConnectionStrings__DefaultConnection=Host=db;Database=AdminConstructDb;Username=postgres;Password=admin123
+      - ConnectionStrings__DefaultConnection=${CONNECTION_STRING}
     networks:
       - adminconstruct-network
 
@@ -19,17 +19,17 @@ services:
     image: postgres:16-alpine
     container_name: adminconstruct-db
     environment:
-      POSTGRES_DB: AdminConstructDb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5434:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - adminconstruct-network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -46,14 +46,14 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=Host=db;Database=AdminConstructDb;Username=postgres;Password=admin123
-      - Jwt__SecretKey=MiClaveSecretaSuperSeguraParaJWT2024AdminConstruct
-      - Jwt__Issuer=AdminConstruct
-      - Jwt__Audience=AdminConstructUsers
-      - SmtpSettings__Server=smtp.gmail.com
-      - SmtpSettings__Port=587
-      - SmtpSettings__Username=your-email@gmail.com
-      - SmtpSettings__Password=your-app-password
+      - ConnectionStrings__DefaultConnection=${CONNECTION_STRING}
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      - Jwt__Audience=${JWT_AUDIENCE}
+      - Smtp__Host=${SMTP_HOST}
+      - Smtp__Port=${SMTP_PORT}
+      - Smtp__Username=${SMTP_USERNAME}
+      - Smtp__Password=${SMTP_PASSWORD}
     ports:
       - "5228:8080"
     networks:
@@ -71,7 +71,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=Host=db;Database=AdminConstructDb;Username=postgres;Password=admin123
+      - ConnectionStrings__DefaultConnection=${CONNECTION_STRING}
     ports:
       - "5005:8080"
     networks:

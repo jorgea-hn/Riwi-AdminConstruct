@@ -54,11 +54,11 @@ export default function Navbar() {
               <>
                 <Link to="/products" className="hover:text-secondary transition font-medium flex items-center space-x-1">
                   <Package size={18} />
-                  <span className="hidden md:inline">Productos</span>
+                  <span className="hidden md:inline">Products</span>
                 </Link>
                 <Link to="/machinery" className="hover:text-secondary transition font-medium flex items-center space-x-1">
                   <Truck size={18} />
-                  <span className="hidden md:inline">Maquinaria</span>
+                  <span className="hidden md:inline">Machinery</span>
                 </Link>
                 
                 <Link to="/cart" className="relative hover:text-secondary transition group">
@@ -97,7 +97,7 @@ export default function Navbar() {
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         <UserCircle size={18} className="text-primary" />
-                        <span>Mi Perfil</span>
+                        <span>My Profile</span>
                       </Link>
                       
                       <div className="border-t border-gray-100 my-1"></div>
@@ -107,7 +107,7 @@ export default function Navbar() {
                         className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-red-50 text-red-600 transition text-sm"
                       >
                         <LogOut size={18} />
-                        <span>Cerrar Sesión</span>
+                        <span>Logout</span>
                       </button>
                     </div>
                   )}
@@ -116,13 +116,13 @@ export default function Navbar() {
             ) : (
               <>
                 <Link to="/login" className="hover:text-secondary transition font-medium">
-                  Iniciar Sesión
+                  Login
                 </Link>
                 <Link
                   to="/register"
                   className="bg-secondary px-4 py-2 rounded-lg hover:bg-secondary-dark transition font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
-                  Registrarse
+                  Register
                 </Link>
               </>
             )}

@@ -22,7 +22,7 @@ export default function Cart() {
 
   const handleCheckout = async () => {
     if (cartItems.length === 0) {
-      notifications.warning('El carrito está vacío');
+      notifications.warning('Cart is empty');
       return;
     }
 
@@ -72,7 +72,7 @@ export default function Cart() {
             customerId: customerId,
             startDateTime: startDate.toISOString(),
             endDateTime: endDate.toISOString(),
-            notes: 'Alquiler desde carrito web'
+            notes: 'Rental from web cart'
           };
 
           console.log('[Cart] Creating rental:', rentalPayload);
@@ -81,12 +81,12 @@ export default function Cart() {
       }
 
       const message = products.length > 0 && rentals.length > 0
-        ? 'Compra y alquiler realizados con éxito'
+        ? 'Purchase and rental successful'
         : products.length > 0
-          ? 'Compra realizada con éxito'
-          : 'Alquiler realizado con éxito';
+          ? 'Purchase successful'
+          : 'Rental successful';
 
-      notifications.success(`${message}. Recibirás un correo de confirmación.`);
+      notifications.success(`${message}. You will receive a confirmation email.`);
       clearCart();
     } catch (error: any) {
       console.error('Error detailed:', error);
@@ -94,7 +94,7 @@ export default function Cart() {
         console.error('Response data:', error.response.data);
         console.error('Response status:', error.response.status);
       }
-      notifications.error(`Error al procesar: ${error.response?.data?.message || error.message || 'Error desconocido'}`);
+      notifications.error(`Error processing: ${error.response?.data?.message || error.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -106,21 +106,21 @@ export default function Cart() {
     const hasRentals = cartItems.some(item => item.type === 'rental');
 
     if (hasProducts && hasRentals) {
-      return loading ? 'Procesando...' : 'Finalizar Compra y Alquiler';
+      return loading ? 'Processing...' : 'Complete Purchase and Rental';
     } else if (hasRentals) {
-      return loading ? 'Procesando...' : 'Finalizar Alquiler';
+      return loading ? 'Processing...' : 'Complete Rental';
     } else {
-      return loading ? 'Procesando...' : 'Finalizar Compra';
+      return loading ? 'Processing...' : 'Complete Purchase';
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-primary mb-8">Carrito de Compras</h1>
+      <h1 className="text-3xl font-bold text-primary mb-8">Shopping Cart</h1>
 
       {cartItems.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-xl text-gray-600">Tu carrito está vacío</p>
+          <p className="text-xl text-gray-600">Your cart is empty</p>
         </div>
       ) : (
         <div className="grid lg:grid-cols-3 gap-8">
@@ -131,15 +131,15 @@ export default function Cart() {
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
                     <p className="text-sm text-gray-500 mt-1">
-                      {item.type === 'rental' ? 'Alquiler' : 'Producto'}
+                      {item.type === 'rental' ? 'Rental' : 'Product'}
                     </p>
                     {item.type === 'rental' && item.startDate && item.endDate && (
                       <p className="text-sm text-gray-600 mt-2">
-                        Del {new Date(item.startDate).toLocaleDateString()} al {new Date(item.endDate).toLocaleDateString()}
+                        From {new Date(item.startDate).toLocaleDateString()} to {new Date(item.endDate).toLocaleDateString()}
                       </p>
                     )}
                     <p className="text-lg font-bold text-primary mt-2">
-                      ${item.price.toFixed(2)} {item.type === 'rental' ? '/día' : ''}
+                      ${item.price.toFixed(2)} {item.type === 'rental' ? '/day' : ''}
                     </p>
                   </div>
 
@@ -175,14 +175,14 @@ export default function Cart() {
 
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">Resumen</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">Summary</h3>
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal:</span>
                   <span className="font-semibold">${calculateTotal().toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">IVA (19%):</span>
+                  <span className="text-gray-600">VAT (19%):</span>
                   <span className="font-semibold">${(calculateTotal() * 0.19).toFixed(2)}</span>
                 </div>
                 <div className="border-t pt-2 flex justify-between text-lg font-bold">

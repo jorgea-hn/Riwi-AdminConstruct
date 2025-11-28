@@ -20,6 +20,9 @@ appsettings.Development.json
 .env
 .env.local
 
+# EXCEPCIÓN: Permitir env_configuration.txt para compartir con el profesor
+!env_configuration.txt
+
 # IDEs
 .vs/
 .vscode/

@@ -27,12 +27,12 @@ namespace AdminConstruct.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            // Verificar si ya existe el usuario
+            // Check if user already exists
             var userExists = await _userManager.FindByEmailAsync(dto.Email);
             if (userExists != null)
-                return BadRequest("El usuario ya existe.");
+                return BadRequest("User already exists.");
 
-            // Crear nuevo usuario
+            // Create new user
             var user = new IdentityUser
             {
                 UserName = dto.Email,
@@ -43,10 +43,10 @@ namespace AdminConstruct.API.Controllers
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            // Asignar rol Cliente
+            // Assign Client role
             await _userManager.AddToRoleAsync(user, "Cliente");
 
-            // Crear Customer asociado
+            // Create associated Customer
             var customer = new AdminConstruct.Web.Models.Customer
             {
                 Name = dto.Name,
@@ -56,23 +56,23 @@ namespace AdminConstruct.API.Controllers
                 UserId = user.Id
             };
 
-            // Guardar customer en la base de datos
+            // Save customer to database
             var context = HttpContext.RequestServices.GetRequiredService<AdminConstruct.Web.Data.ApplicationDbContext>();
             context.Customers.Add(customer);
             await context.SaveChangesAsync();
 
-            // Enviar correo de bienvenida
+            // Send welcome email
             try
             {
-                await _emailService.SendEmailAsync(dto.Email, "Bienvenido a AdminConstruct", "<h1>¡Bienvenido!</h1><p>Gracias por registrarte en nuestra plataforma.</p>");
+                await _emailService.SendEmailAsync(dto.Email, "Welcome to AdminConstruct", "<h1>Welcome!</h1><p>Thanks for registering on our platform.</p>");
             }
             catch (Exception ex)
             {
-                // Loguear error pero no fallar el registro
-                Console.WriteLine($"Error enviando correo: {ex.Message}");
+                // Log error but do not fail registration
+                Console.WriteLine($"Error sending email: {ex.Message}");
             }
 
-            return Ok(new { message = "Usuario registrado correctamente.", customerId = customer.Id });
+            return Ok(new { message = "User registered successfully.", customerId = customer.Id });
         }
 
         // --------------------- Login ---------------------
@@ -80,31 +80,31 @@ namespace AdminConstruct.API.Controllers
         public async Task<IActionResult> Login(LoginDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
-            if (user == null) return Unauthorized("Usuario o contraseña inválidos.");
+            if (user == null) return Unauthorized("Invalid user or password.");
 
             var validPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
-            if (!validPassword) return Unauthorized("Usuario o contraseña inválidos.");
+            if (!validPassword) return Unauthorized("Invalid user or password.");
 
             var token = await GenerateJwtToken(user);
 
             return Ok(token);
         }
 
-        // --------------------- Generar JWT ---------------------
+        // --------------------- Generate JWT ---------------------
         private async Task<AuthResponseDto> GenerateJwtToken(IdentityUser user)
         {
             var roles = await _userManager.GetRolesAsync(user);
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),  // IMPORTANTE: usar user.Id en lugar de email
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),  // IMPORTANT: use user.Id instead of email
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Email, user.Email ?? "")
             };
 
-            // Agregar roles
+            // Add roles
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
@@ -113,7 +113,7 @@ namespace AdminConstruct.API.Controllers
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var expiration = DateTime.UtcNow.AddHours(24); // Extendido a 24 horas
+            var expiration = DateTime.UtcNow.AddHours(24); // Extended to 24 hours
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],

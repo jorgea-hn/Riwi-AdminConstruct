@@ -11,21 +11,6 @@ Sistema completo de gestión para empresas de construcción con panel administra
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/tu-usuario/Riwi-AdminConstruct.git
-cd Riwi-AdminConstruct
-
-# 2. Levantar todo el sistema
-docker compose up --build
-
-# 3. Acceder a los servicios
-# Cliente:  http://localhost:3000
-# API:      http://localhost:5228
-- Protección de rutas
-
-### 📦 Gestión de Productos
-- CRUD completo
-- Catálogo paginado
-- Control de inventario
 - Carga de imágenes
 
 ### 🚜 Gestión de Maquinaria

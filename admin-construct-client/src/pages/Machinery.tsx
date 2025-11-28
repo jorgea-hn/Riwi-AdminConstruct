@@ -27,7 +27,7 @@ export default function Machinery() {
       setTotalPages(result.totalPages);
     } catch (error) {
       console.error('Error loading machinery:', error);
-      notifications.error('Error al cargar la maquinaria');
+      notifications.error('Error loading machinery');
     } finally {
       setLoading(false);
     }
@@ -39,7 +39,7 @@ export default function Machinery() {
 
   const confirmRental = async () => {
     if (!selectedMachinery || !startDate || !endDate) {
-      notifications.warning('Por favor completa todos los campos');
+      notifications.warning('Please complete all fields');
       return;
     }
 
@@ -53,7 +53,7 @@ export default function Machinery() {
       quantity: 1
     });
     
-    notifications.success('Alquiler agregado al carrito');
+    notifications.success('Rental added to cart');
     setSelectedMachinery(null);
     setStartDate('');
     setEndDate('');
@@ -61,7 +61,7 @@ export default function Machinery() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-primary mb-8">Catálogo de Maquinaria</h1>
+      <h1 className="text-3xl font-bold text-primary mb-8">Machinery Catalog</h1>
 
       {loading ? (
         <div className="text-center py-12">
@@ -80,11 +80,11 @@ export default function Machinery() {
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm text-gray-500">Stock: {item.stock}</span>
                     <span className={`px-2 py-1 rounded text-xs ${item.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                      {item.isActive ? 'Disponible' : 'No disponible'}
+                      {item.isActive ? 'Available' : 'Unavailable'}
                     </span>
                   </div>
                   <p className="text-2xl font-bold text-secondary mb-4">
-                    ${item.price.toFixed(2)}/día
+                    ${item.price.toFixed(2)}/day
                   </p>
                   <button
                     onClick={() => handleRent(item)}
@@ -92,45 +92,45 @@ export default function Machinery() {
                     className="w-full bg-secondary text-white py-2 rounded-lg hover:bg-secondary-dark transition flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                   >
                     <Calendar size={20} />
-                    <span>Alquilar</span>
+                    <span>Rent</span>
                   </button>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Paginación */}
+          {/* Pagination */}
           <div className="flex justify-center items-center space-x-4 mt-8">
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
               className="px-4 py-2 bg-primary text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-900 transition"
             >
-              Anterior
+              Previous
             </button>
             <span className="text-gray-700">
-              Página {page} de {totalPages}
+              Page {page} of {totalPages}
             </span>
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
               className="px-4 py-2 bg-primary text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-900 transition"
             >
-              Siguiente
+              Next
             </button>
           </div>
         </>
       )}
 
-      {/* Modal de Alquiler */}
+      {/* Rental Modal */}
       {selectedMachinery && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-2xl font-bold text-primary mb-4">Alquilar: {selectedMachinery.name}</h3>
+            <h3 className="text-2xl font-bold text-primary mb-4">Rent: {selectedMachinery.name}</h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Fecha de Inicio
+                  Start Date
                 </label>
                 <input
                   type="date"
@@ -142,7 +142,7 @@ export default function Machinery() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Fecha de Fin
+                  End Date
                 </label>
                 <input
                   type="date"
@@ -157,7 +157,7 @@ export default function Machinery() {
                   onClick={confirmRental}
                   className="flex-1 bg-secondary text-white py-2 rounded-lg hover:bg-orange-600 transition"
                 >
-                  Confirmar
+                  Confirm
                 </button>
                 <button
                   onClick={() => {
@@ -167,7 +167,7 @@ export default function Machinery() {
                   }}
                   className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition"
                 >
-                  Cancelar
+                  Cancel
                 </button>
               </div>
             </div>
