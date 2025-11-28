@@ -136,11 +136,9 @@ using (var scope = app.Services.CreateScope())
 // -----------------------------
 // MIDDLEWARE
 // -----------------------------
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Swagger habilitado en todos los entornos (Development y Production)
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");

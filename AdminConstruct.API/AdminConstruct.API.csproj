@@ -30,7 +30,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AdminConstruct.Web\AdminConstruct.Web.csproj" />
+      <ProjectReference Include="..\AdminConstruct.Web\AdminConstruct.Web.csproj">
+        <ExcludeAssets>contentfiles</ExcludeAssets>
+        <PrivateAssets>contentfiles</PrivateAssets>
+      </ProjectReference>
     </ItemGroup>
 
 </Project>

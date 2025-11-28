@@ -23,7 +23,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin123
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -41,8 +41,6 @@ services:
       dockerfile: AdminConstruct.API/Dockerfile
     container_name: adminconstruct-api
     depends_on:
-      tests:
-        condition: service_completed_successfully
       db:
         condition: service_healthy
     environment:
@@ -68,8 +66,6 @@ services:
       dockerfile: AdminConstruct.Web/Dockerfile
     container_name: adminconstruct-web
     depends_on:
-      tests:
-        condition: service_completed_successfully
       db:
         condition: service_healthy
     environment:
@@ -88,8 +84,6 @@ services:
       dockerfile: Dockerfile
     container_name: adminconstruct-client
     depends_on:
-      tests:
-        condition: service_completed_successfully
       api:
         condition: service_started
     ports:

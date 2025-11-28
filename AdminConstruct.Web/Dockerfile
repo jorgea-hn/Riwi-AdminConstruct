@@ -12,8 +12,8 @@ WORKDIR /src
 COPY ["AdminConstruct.Web/AdminConstruct.Web.csproj", "AdminConstruct.Web/"]
 RUN dotnet restore "AdminConstruct.Web/AdminConstruct.Web.csproj"
 
-# Copiar todo el código
-COPY . .
+# Copiar solo el código del proyecto Web
+COPY ["AdminConstruct.Web/", "AdminConstruct.Web/"]
 WORKDIR "/src/AdminConstruct.Web"
 RUN dotnet build "./AdminConstruct.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
