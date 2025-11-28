@@ -13,18 +13,19 @@ export default function Products() {
   const [searchTerm, setSearchTerm] = useState('');
   const { addToCart } = useCart();
 
-
+  // Load products when page changes
   useEffect(() => {
     loadProducts();
   }, [page]);
 
+  // Filter products when search term changes
   useEffect(() => {
     if (searchTerm.trim() === '') {
       setFilteredProducts(products);
     } else {
       const lowerTerm = searchTerm.toLowerCase();
-      const filtered = products.filter(product => 
-        product.name.toLowerCase().includes(lowerTerm) || 
+      const filtered = products.filter(product =>
+        product.name.toLowerCase().includes(lowerTerm) ||
         (product.description && product.description.toLowerCase().includes(lowerTerm))
       );
       setFilteredProducts(filtered);
@@ -34,7 +35,8 @@ export default function Products() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const data = await productService.getProducts(page, 100); // Cargar más para filtrado cliente-side efectivo
+      // Load more items for effective client-side filtering
+      const data = await productService.getProducts(page, 100);
       setProducts(data.items);
       setFilteredProducts(data.items);
       setTotalPages(Math.ceil(data.totalCount / data.pageSize));
@@ -61,7 +63,8 @@ export default function Products() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <h1 className="text-3xl font-bold text-primary">Catálogo de Productos</h1>
-        
+
+        {/* Search Bar */}
         <div className="relative w-full md:w-96">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search size={20} className="text-gray-400" />
@@ -91,11 +94,12 @@ export default function Products() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.map((product) => (
                 <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition flex flex-col h-full">
+                  {/* Product Image */}
                   <div className="relative h-48 bg-gray-200 overflow-hidden group">
                     {product.imageUrl ? (
-                      <img 
-                        src={product.imageUrl} 
-                        alt={product.name} 
+                      <img
+                        src={product.imageUrl}
+                        alt={product.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     ) : (
@@ -109,13 +113,14 @@ export default function Products() {
                       </div>
                     )}
                   </div>
-                  
+
+                  {/* Product Details */}
                   <div className="p-6 flex-grow flex flex-col">
                     <h3 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-1" title={product.name}>{product.name}</h3>
                     {product.description && (
                       <p className="text-gray-600 text-sm mb-3 line-clamp-2 flex-grow" title={product.description}>{product.description}</p>
                     )}
-                    
+
                     <div className="mt-auto">
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-sm text-gray-500">Stock: {product.stockQuantity}</span>
@@ -141,7 +146,7 @@ export default function Products() {
             </div>
           )}
 
-          {/* Paginación (solo si no hay búsqueda activa) */}
+          {/* Pagination (only if search is empty) */}
           {searchTerm === '' && (
             <div className="flex justify-center items-center space-x-4 mt-8">
               <button

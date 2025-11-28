@@ -17,7 +17,7 @@ interface Purchase {
   date: string;
   totalAmount: number;
   details: {
-    product: { name: string };
+    productName: string;
     quantity: number;
     unitPrice: number;
   }[];
@@ -25,7 +25,7 @@ interface Purchase {
 
 interface Rental {
   id: string;
-  machinery: { name: string };
+  machineryName: string;
   startDateTime: string;
   endDateTime: string;
   totalAmount: number;
@@ -39,7 +39,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState<'profile' | 'purchases' | 'rentals'>('profile');
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [rentals, setRentals] = useState<Rental[]>([]);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     document: '',
@@ -54,8 +54,8 @@ export default function Profile() {
   const loadData = async () => {
     try {
       setLoading(true);
-      
-      // Cargar perfil primero (crítico)
+
+      // Load profile first (critical)
       const profileRes = await api.get<CustomerProfile>('/customers/my-profile');
       setProfile(profileRes.data);
       setFormData({
@@ -64,7 +64,7 @@ export default function Profile() {
         phone: profileRes.data.phone || ''
       });
 
-      // Cargar historial (no crítico - manejar errores individualmente)
+      // Load history (non-critical - handle errors individually)
       try {
         const purchasesRes = await api.get<Purchase[]>('/sales');
         setPurchases(purchasesRes.data);
@@ -150,11 +150,10 @@ export default function Profile() {
           <div className="flex border-b border-gray-200">
             <button
               onClick={() => setActiveTab('profile')}
-              className={`flex-1 py-4 px-6 text-center font-medium transition ${
-                activeTab === 'profile'
-                  ? 'text-primary border-b-2 border-primary'
-                  : 'text-gray-500 hover:text-primary'
-              }`}
+              className={`flex-1 py-4 px-6 text-center font-medium transition ${activeTab === 'profile'
+                ? 'text-primary border-b-2 border-primary'
+                : 'text-gray-500 hover:text-primary'
+                }`}
             >
               <div className="flex items-center justify-center space-x-2">
                 <User size={20} />
@@ -163,11 +162,10 @@ export default function Profile() {
             </button>
             <button
               onClick={() => setActiveTab('purchases')}
-              className={`flex-1 py-4 px-6 text-center font-medium transition ${
-                activeTab === 'purchases'
-                  ? 'text-primary border-b-2 border-primary'
-                  : 'text-gray-500 hover:text-primary'
-              }`}
+              className={`flex-1 py-4 px-6 text-center font-medium transition ${activeTab === 'purchases'
+                ? 'text-primary border-b-2 border-primary'
+                : 'text-gray-500 hover:text-primary'
+                }`}
             >
               <div className="flex items-center justify-center space-x-2">
                 <ShoppingBag size={20} />
@@ -176,11 +174,10 @@ export default function Profile() {
             </button>
             <button
               onClick={() => setActiveTab('rentals')}
-              className={`flex-1 py-4 px-6 text-center font-medium transition ${
-                activeTab === 'rentals'
-                  ? 'text-primary border-b-2 border-primary'
-                  : 'text-gray-500 hover:text-primary'
-              }`}
+              className={`flex-1 py-4 px-6 text-center font-medium transition ${activeTab === 'rentals'
+                ? 'text-primary border-b-2 border-primary'
+                : 'text-gray-500 hover:text-primary'
+                }`}
             >
               <div className="flex items-center justify-center space-x-2">
                 <Clock size={20} />
@@ -283,7 +280,7 @@ export default function Profile() {
                         <ul className="space-y-1">
                           {purchase.details.map((detail, idx) => (
                             <li key={idx} className="text-sm text-gray-600 flex justify-between">
-                              <span>{detail.quantity}x {detail.product.name}</span>
+                              <span>{detail.quantity}x {detail.productName}</span>
                               <span>${(detail.quantity * detail.unitPrice).toFixed(2)}</span>
                             </li>
                           ))}
@@ -306,7 +303,7 @@ export default function Profile() {
                     <div key={rental.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
                       <div className="flex justify-between items-start mb-4">
                         <div>
-                          <h3 className="font-bold text-lg text-gray-800">{rental.machinery.name}</h3>
+                          <h3 className="font-bold text-lg text-gray-800">{rental.machineryName}</h3>
                           <div className="flex items-center text-sm text-gray-500 mt-1">
                             <Calendar size={16} className="mr-1" />
                             <span>

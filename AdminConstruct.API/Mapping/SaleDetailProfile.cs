@@ -8,7 +8,9 @@ namespace AdminConstruct.API.Mapping
     {
         public SaleDetailProfile()
         {
-            CreateMap<SaleDetail, SaleDetailDto>().ReverseMap();
+            CreateMap<SaleDetail, SaleDetailDto>()
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+                .ReverseMap();
         }
     }
 }

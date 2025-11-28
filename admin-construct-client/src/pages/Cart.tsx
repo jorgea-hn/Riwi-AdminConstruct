@@ -8,10 +8,12 @@ export default function Cart() {
   const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
 
+  // Calculate total price including rentals and products
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
       if (item.type === 'rental' && item.startDate && item.endDate) {
-        const days = Math.ceil((new Date(item.endDate).getTime() - new Date(item.startDate).getTime()) / (1000 * 60 * 60 * 24));
+        let days = Math.ceil((new Date(item.endDate).getTime() - new Date(item.startDate).getTime()) / (1000 * 60 * 60 * 24));
+        if (days === 0) days = 1; // Minimum 1 day rental
         return total + (item.price * days);
       }
       return total + (item.price * item.quantity);
@@ -26,18 +28,18 @@ export default function Cart() {
 
     setLoading(true);
     try {
-      // 1. Obtener perfil del cliente
+      // 1. Get customer profile
       const customerResponse = await api.get('/customers/my-profile');
       const customerId = customerResponse.data.id;
 
-      // 2. Separar productos y alquileres
+      // 2. Separate products and rentals
       const products = cartItems.filter(item => item.type === 'product');
       const rentals = cartItems.filter(item => item.type === 'rental');
 
-      // 3. Procesar venta de productos
+      // 3. Process product sales
       if (products.length > 0) {
         const productTotal = products.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const totalWithTax = productTotal * 1.19; // IVA 19%
+        const totalWithTax = productTotal * 1.19; // VAT 19%
 
         const salePayload = {
           customerId: customerId,
@@ -53,18 +55,18 @@ export default function Cart() {
         await api.post('/sales', salePayload);
       }
 
-      // 4. Procesar alquileres
+      // 4. Process rentals
       if (rentals.length > 0) {
         for (const rental of rentals) {
           if (!rental.startDate || !rental.endDate) continue;
-          
-          // Convertir fechas a formato ISO con hora
+
+          // Convert dates to ISO format with time
           const startDate = new Date(rental.startDate);
           startDate.setHours(8, 0, 0, 0); // 8:00 AM
-          
+
           const endDate = new Date(rental.endDate);
           endDate.setHours(18, 0, 0, 0); // 6:00 PM
-          
+
           const rentalPayload = {
             machineryId: rental.id,
             customerId: customerId,
@@ -81,8 +83,8 @@ export default function Cart() {
       const message = products.length > 0 && rentals.length > 0
         ? 'Compra y alquiler realizados con éxito'
         : products.length > 0
-        ? 'Compra realizada con éxito'
-        : 'Alquiler realizado con éxito';
+          ? 'Compra realizada con éxito'
+          : 'Alquiler realizado con éxito';
 
       notifications.success(`${message}. Recibirás un correo de confirmación.`);
       clearCart();
@@ -98,11 +100,11 @@ export default function Cart() {
     }
   };
 
-  // Determinar el texto del botón según el contenido del carrito
+  // Determine button text based on cart content
   const getCheckoutButtonText = () => {
     const hasProducts = cartItems.some(item => item.type === 'product');
     const hasRentals = cartItems.some(item => item.type === 'rental');
-    
+
     if (hasProducts && hasRentals) {
       return loading ? 'Procesando...' : 'Finalizar Compra y Alquiler';
     } else if (hasRentals) {
@@ -140,7 +142,7 @@ export default function Cart() {
                       ${item.price.toFixed(2)} {item.type === 'rental' ? '/día' : ''}
                     </p>
                   </div>
-                  
+
                   <div className="flex items-center space-x-4">
                     {item.type === 'product' && (
                       <div className="flex items-center space-x-2">
