@@ -1,5 +1,6 @@
 using AdminConstruct.Web.Models;
 using AdminConstruct.Web.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdminConstruct.API.Data
 {
@@ -7,7 +8,8 @@ namespace AdminConstruct.API.Data
     {
         public static void Initialize(ApplicationDbContext context)
         {
-            context.Database.EnsureCreated();
+            // Note: Migrations are applied in Program.cs startup code
+            // This method only handles seed data
 
             // Look for any products.
             if (context.Products.Any())

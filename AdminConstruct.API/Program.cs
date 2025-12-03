@@ -7,6 +7,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Habilitar comportamiento legado de timestamps para PostgreSQL
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 
 // -----------------------------
@@ -120,6 +122,9 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     var context = services.GetRequiredService<ApplicationDbContext>();
+
+    // Note: Migrations are applied by the Web service which owns the migration files
+    // This prevents concurrent migration attempts that cause database conflicts
 
     // Initialize Seed Data
     AdminConstruct.API.Data.DbInitializer.Initialize(context);

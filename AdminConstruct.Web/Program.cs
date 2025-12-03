@@ -77,6 +77,9 @@ using (var scope = app.Services.CreateScope())
 
     var context = services.GetRequiredService<ApplicationDbContext>();
 
+    // Apply migrations before initializing seed data
+    context.Database.Migrate();
+
     await SeedData.InitializeAsync(userManager, roleManager, context);
 }
 // Configure the HTTP request pipeline.
