@@ -44,6 +44,8 @@ namespace AdminConstruct.Test
             }
 
             var mockMapper = new Mock<IMapper>();
+            mockMapper.Setup(m => m.Map<MachineryRental>(It.IsAny<CreateMachineryRentalDto>()))
+                .Returns(new MachineryRental());
             var mockUserManager = new Mock<UserManager<IdentityUser>>(
                 new Mock<IUserStore<IdentityUser>>().Object, null, null, null, null, null, null, null, null);
             var mockEmailService = new Mock<IEmailService>();

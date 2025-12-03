@@ -40,8 +40,8 @@ namespace AdminConstruct.Test
 
                 // Assert
                 var okResult = Assert.IsType<OkObjectResult>(result);
-                var returnProducts = Assert.IsType<List<ProductDto>>(okResult.Value);
-                Assert.Equal(2, returnProducts.Count);
+                var paginatedResult = Assert.IsType<PaginatedResult<ProductDto>>(okResult.Value);
+                Assert.Equal(2, paginatedResult.Items.Count);
             }
         }
     }

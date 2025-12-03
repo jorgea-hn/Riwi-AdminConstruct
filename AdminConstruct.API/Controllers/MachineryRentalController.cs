@@ -74,10 +74,22 @@ namespace AdminConstruct.API.Controllers
             var machinery = await _context.Machineries.FindAsync(dto.MachineryId);
             if (machinery == null) return BadRequest("Machinery not found");
 
-            // Basic validation: Check if dates are valid
             if (dto.StartDateTime >= dto.EndDateTime)
             {
                 return BadRequest("End date must be after start date");
+            }
+
+            // Check availability
+            var conflictingRentals = await _context.MachineryRentals
+                .Where(r => r.MachineryId == dto.MachineryId && r.IsActive &&
+                           ((dto.StartDateTime >= r.StartDateTime && dto.StartDateTime < r.EndDateTime) ||
+                            (dto.EndDateTime > r.StartDateTime && dto.EndDateTime <= r.EndDateTime) ||
+                            (dto.StartDateTime <= r.StartDateTime && dto.EndDateTime >= r.EndDateTime)))
+                .CountAsync();
+
+            if (conflictingRentals >= machinery.Stock)
+            {
+                return BadRequest("No hay disponibilidad para esta maquinaria en las fechas seleccionadas.");
             }
 
             // Calculate total amount

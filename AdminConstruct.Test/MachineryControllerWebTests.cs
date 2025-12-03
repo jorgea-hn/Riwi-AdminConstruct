@@ -83,6 +83,7 @@ namespace AdminConstruct.Test.Web
             };
             context.Machineries.Add(machinery);
             await context.SaveChangesAsync();
+            context.Entry(machinery).State = EntityState.Detached;
 
             var mockMapper = new Mock<IMapper>();
             var controller = new MachineryController(context, mockMapper.Object);

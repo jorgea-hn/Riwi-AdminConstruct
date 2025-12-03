@@ -126,8 +126,26 @@ using (var scope = app.Services.CreateScope())
     // Note: Migrations are applied by the Web service which owns the migration files
     // This prevents concurrent migration attempts that cause database conflicts
 
-    // Initialize Seed Data
-    AdminConstruct.API.Data.DbInitializer.Initialize(context);
+    // Initialize Seed Data with Retry Logic
+    // We need to wait for the Web service to apply migrations
+    int maxRetries = 10;
+    int retryDelay = 2000; // 2 seconds
+
+    for (int i = 0; i < maxRetries; i++)
+    {
+        try
+        {
+            AdminConstruct.API.Data.DbInitializer.Initialize(context);
+            break; // Success
+        }
+        catch (Exception ex)
+        {
+            if (i == maxRetries - 1) throw; // Rethrow if last retry
+            
+            Console.WriteLine($"[DbInitializer] Attempt {i + 1} failed: {ex.Message}. Waiting for migrations...");
+            System.Threading.Thread.Sleep(retryDelay);
+        }
+    }
 
     string[] roles = { "Admin", "Cliente" }; // Keeping role names as they might be used in logic, but comments are translated.
 
