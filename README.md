@@ -229,7 +229,7 @@ SMTP_PASSWORD=your_gmail_app_password
 The system automatically creates two default users on first startup:
 
 ### Administrator Account
-- **Email:** `admin@adminconstruct.com`
+- **Email:** `admin@firmeza.com`
 - **Password:** `Admin123!`
 - **Access:** Admin Panel (http://localhost:5005)
 - **Permissions:** Full system administration, reports, inventory management
@@ -425,7 +425,7 @@ Academic project developed for **Riwi** - 2025
 
 ## 👥 Author
 
-Developed as a final project for the Riwi training program.
+Jorge Henriquez
 
 ---
 
